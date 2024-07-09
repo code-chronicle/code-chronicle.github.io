@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://code-chronicle.github.io/categories/</loc>
+    <lastmod>2024-07-03T09:00:46+09:00</lastmod>
+  </url><url>
+    <loc>https://code-chronicle.github.io/</loc>
+    <lastmod>2024-07-03T09:00:46+09:00</lastmod>
+  </url><url>
+    <loc>https://code-chronicle.github.io/kubernetes/getting-started-with-keda/</loc>
+    <lastmod>2024-07-03T09:00:46+09:00</lastmod>
+  </url><url>
+    <loc>https://code-chronicle.github.io/tags/keda/</loc>
+    <lastmod>2024-07-03T09:00:46+09:00</lastmod>
+  </url><url>
+    <loc>https://code-chronicle.github.io/tags/kubernetes/</loc>
+    <lastmod>2024-07-03T09:00:46+09:00</lastmod>
+  </url><url>
+    <loc>https://code-chronicle.github.io/kubernetes/</loc>
+    <lastmod>2024-07-03T09:00:46+09:00</lastmod>
+  </url><url>
+    <loc>https://code-chronicle.github.io/categories/kubernetes/</loc>
+    <lastmod>2024-07-03T09:00:46+09:00</lastmod>
+  </url><url>
+    <loc>https://code-chronicle.github.io/tags/</loc>
+    <lastmod>2024-07-03T09:00:46+09:00</lastmod>
+  </url>
+</urlset>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Getting Started with Keda | Code Chronicle</title>
+<meta name="keywords" content="kubernetes, keda">
+<meta name="description" content="KEDA: Kubernetes Event-Driven Autoscaling 소개 클라우드 네이티브 애플리케이션은 동적으로 변하는 트래픽과 워크로드를 효율적으로 처리하기 위해 자동 확장이 필수적입니다. Kubernetes는 기본적인 자동 확장 기능을 제공하지만, KEDA(Kubernetes Event-Driven Autoscaling)는 보다 세밀하고 이벤트 기반의 자동 확장을 가능하게 해줍니다. 이번 포스팅에서는 KEDA의 개념, 주요 기능, 그리고 사용 사례에 대해 알아보겠습니다.
+KEDA란 무엇인가? KEDA(Kubernetes Event-Driven Autoscaling)는 Kubernetes와 함께 작동하도록 설계된 이벤트 기반 자동 확장 플랫폼입니다. KEDA는 Kubernetes 클러스터에서 애플리케이션을 안정적이고 확장 가능하게 실행할 수 있도록 지원합니다.">
+<meta name="author" content="Kai">
+<link rel="canonical" href="https://code-chronicle.github.io/kubernetes/getting-started-with-keda/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9e9dd26a8d2ed3e32c08a1b5c82a7ac786127e923c340d2444676c8c7f643c29.css" integrity="sha256-np3Sao0u0&#43;MsCKG1yCp6x4YSfpI8NA0kRGdsjH9kPCk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://code-chronicle.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://code-chronicle.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://code-chronicle.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://code-chronicle.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://code-chronicle.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://code-chronicle.github.io/kubernetes/getting-started-with-keda/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Getting Started with Keda" />
+<meta property="og:description" content="KEDA: Kubernetes Event-Driven Autoscaling 소개 클라우드 네이티브 애플리케이션은 동적으로 변하는 트래픽과 워크로드를 효율적으로 처리하기 위해 자동 확장이 필수적입니다. Kubernetes는 기본적인 자동 확장 기능을 제공하지만, KEDA(Kubernetes Event-Driven Autoscaling)는 보다 세밀하고 이벤트 기반의 자동 확장을 가능하게 해줍니다. 이번 포스팅에서는 KEDA의 개념, 주요 기능, 그리고 사용 사례에 대해 알아보겠습니다.
+KEDA란 무엇인가? KEDA(Kubernetes Event-Driven Autoscaling)는 Kubernetes와 함께 작동하도록 설계된 이벤트 기반 자동 확장 플랫폼입니다. KEDA는 Kubernetes 클러스터에서 애플리케이션을 안정적이고 확장 가능하게 실행할 수 있도록 지원합니다." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://code-chronicle.github.io/kubernetes/getting-started-with-keda/" /><meta property="article:section" content="kubernetes" />
+<meta property="article:published_time" content="2024-07-03T09:00:46+09:00" />
+<meta property="article:modified_time" content="2024-07-03T09:00:46+09:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Getting Started with Keda"/>
+<meta name="twitter:description" content="KEDA: Kubernetes Event-Driven Autoscaling 소개 클라우드 네이티브 애플리케이션은 동적으로 변하는 트래픽과 워크로드를 효율적으로 처리하기 위해 자동 확장이 필수적입니다. Kubernetes는 기본적인 자동 확장 기능을 제공하지만, KEDA(Kubernetes Event-Driven Autoscaling)는 보다 세밀하고 이벤트 기반의 자동 확장을 가능하게 해줍니다. 이번 포스팅에서는 KEDA의 개념, 주요 기능, 그리고 사용 사례에 대해 알아보겠습니다.
+KEDA란 무엇인가? KEDA(Kubernetes Event-Driven Autoscaling)는 Kubernetes와 함께 작동하도록 설계된 이벤트 기반 자동 확장 플랫폼입니다. KEDA는 Kubernetes 클러스터에서 애플리케이션을 안정적이고 확장 가능하게 실행할 수 있도록 지원합니다."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Kubernetes",
+      "item": "https://code-chronicle.github.io/kubernetes/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Getting Started with Keda",
+      "item": "https://code-chronicle.github.io/kubernetes/getting-started-with-keda/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Getting Started with Keda",
+  "name": "Getting Started with Keda",
+  "description": "KEDA: Kubernetes Event-Driven Autoscaling 소개 클라우드 네이티브 애플리케이션은 동적으로 변하는 트래픽과 워크로드를 효율적으로 처리하기 위해 자동 확장이 필수적입니다. Kubernetes는 기본적인 자동 확장 기능을 제공하지만, KEDA(Kubernetes Event-Driven Autoscaling)는 보다 세밀하고 이벤트 기반의 자동 확장을 가능하게 해줍니다. 이번 포스팅에서는 KEDA의 개념, 주요 기능, 그리고 사용 사례에 대해 알아보겠습니다.\nKEDA란 무엇인가? KEDA(Kubernetes Event-Driven Autoscaling)는 Kubernetes와 함께 작동하도록 설계된 이벤트 기반 자동 확장 플랫폼입니다. KEDA는 Kubernetes 클러스터에서 애플리케이션을 안정적이고 확장 가능하게 실행할 수 있도록 지원합니다.",
+  "keywords": [
+    "kubernetes", "keda"
+  ],
+  "articleBody": "KEDA: Kubernetes Event-Driven Autoscaling 소개 클라우드 네이티브 애플리케이션은 동적으로 변하는 트래픽과 워크로드를 효율적으로 처리하기 위해 자동 확장이 필수적입니다. Kubernetes는 기본적인 자동 확장 기능을 제공하지만, KEDA(Kubernetes Event-Driven Autoscaling)는 보다 세밀하고 이벤트 기반의 자동 확장을 가능하게 해줍니다. 이번 포스팅에서는 KEDA의 개념, 주요 기능, 그리고 사용 사례에 대해 알아보겠습니다.\nKEDA란 무엇인가? KEDA(Kubernetes Event-Driven Autoscaling)는 Kubernetes와 함께 작동하도록 설계된 이벤트 기반 자동 확장 플랫폼입니다. KEDA는 Kubernetes 클러스터에서 애플리케이션을 안정적이고 확장 가능하게 실행할 수 있도록 지원합니다. KEDA는 애플리케이션의 이벤트 소스를 모니터링하고, 이벤트 볼륨에 따라 워크로드를 자동으로 확장하거나 축소합니다. 이를 통해 리소스 사용을 최적화하고 비용을 절감하며, 애플리케이션이 빠르게 반응하고 확장할 수 있도록 합니다.\nKEDA는 Kafka, Datadog, Prometheus, Cron 등 다양한 이벤트 소스를 지원합니다. 또한 이벤트 수, 이벤트 페이로드 크기 등에 따라 확장하는 다양한 전략을 제공합니다.\nKEDA vs HPA (HorizontalPodAutoscaler) HPA (HorizontalPodAutoscaler)는 Kubernetes 클러스터에서 실행 중인 애플리케이션의 리소스 사용량(CPU, 메모리 사용량)을 기반으로 POD를 확장하거나 축소합니다. 반면, KEDA (Kubernetes Event-Driven Autoscaling)는 이벤트 기반으로 Kubernetes 클러스터에서 실행 중인 애플리케이션의 POD를 확장하거나 축소합니다. KEDA는 다양한 이벤트 소스(예: 메시지 큐, 데이터베이스, HTTP 요청, Cron, 특정 시점의 메트릭 등)를 트리거로 사용하여 POD를 확장하거나 축소할 수 있습니다.\nGetting Started with KEDA Install KEDA를 Kubernetes 클러스터에 Helm을 사용하여 설치합니다.\n$ helm repo add kedacore https://kedacore.github.io/charts $ helm repo update $ helm install keda kedacore/keda --namespace keda --create-namespace Deployment 생성 예시를 위해 nginx deployment를 생성합니다.\napiVersion: apps/v1 kind: Deployment metadata: name: nginx-deployment labels: app: nginx spec: replicas: 3 selector: matchLabels: app: nginx template: metadata: labels: app: nginx spec: containers: - name: nginx image: nginx:1.14.2 ports: - containerPort: 80 ScaledObject 생성 ScaledObject를 사용하여 특정 시간과 CPU 사용률을 기준으로 자동 확장을 설정합니다. CPU / Memory 사용률 기준 트리거를 설정하면 KEDA가 HPA (HorizontalPodAutoscaler)를 생성합니다. ScaledObject를 적용하면 오전 9시부터 10시까지 nginx-deployment의 replica 사이즈가 8개로 확장되는걸 확인할 수 있습니다.\napiVersion: keda.sh/v1alpha1 kind: ScaledObject metadata: name: nginx-scaledobject spec: maxReplicaCount: 10 minReplicaCount: 3 scaleTargetRef: apiVersion: apps/v1 kind: Deployment name: nginx-deployment triggers: - metadata: value: \"50\" metricType: Utilization type: cpu - metadata: desiredReplicas: \"8\" end: 00 09 * * * start: 00 10 * * * timezone: Asia/Seoul type: cron ",
+  "wordCount" : "327",
+  "inLanguage": "en",
+  "datePublished": "2024-07-03T09:00:46+09:00",
+  "dateModified": "2024-07-03T09:00:46+09:00",
+  "author":[{
+    "@type": "Person",
+    "name": "Kai"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://code-chronicle.github.io/kubernetes/getting-started-with-keda/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Code Chronicle",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://code-chronicle.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://code-chronicle.github.io/" accesskey="h" title="Code Chronicle (Alt + H)">Code Chronicle</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://code-chronicle.github.io/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://code-chronicle.github.io/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://code-chronicle.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://code-chronicle.github.io/kubernetes/">Kubernetes</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Getting Started with Keda
+    </h1>
+    <div class="post-meta"><span title='2024-07-03 09:00:46 +0900 KST'>July 3, 2024</span>&nbsp;·&nbsp;Kai
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#keda-kubernetes-event-driven-autoscaling-%ec%86%8c%ea%b0%9c" aria-label="KEDA: Kubernetes Event-Driven Autoscaling 소개">KEDA: Kubernetes Event-Driven Autoscaling 소개</a><ul>
+                        
+                <li>
+                    <a href="#keda%eb%9e%80-%eb%ac%b4%ec%97%87%ec%9d%b8%ea%b0%80" aria-label="KEDA란 무엇인가?">KEDA란 무엇인가?</a></li>
+                <li>
+                    <a href="#keda-vs-hpa-horizontalpodautoscaler" aria-label="KEDA vs HPA (HorizontalPodAutoscaler)">KEDA vs HPA (HorizontalPodAutoscaler)</a></li>
+                <li>
+                    <a href="#getting-started-with-keda" aria-label="Getting Started with KEDA">Getting Started with KEDA</a><ul>
+                        
+                <li>
+                    <a href="#install" aria-label="Install">Install</a></li>
+                <li>
+                    <a href="#deployment-%ec%83%9d%ec%84%b1" aria-label="Deployment 생성">Deployment 생성</a></li>
+                <li>
+                    <a href="#scaledobject-%ec%83%9d%ec%84%b1" aria-label="ScaledObject 생성">ScaledObject 생성</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="keda-kubernetes-event-driven-autoscaling-소개">KEDA: Kubernetes Event-Driven Autoscaling 소개<a hidden class="anchor" aria-hidden="true" href="#keda-kubernetes-event-driven-autoscaling-소개">#</a></h2>
+<p>클라우드 네이티브 애플리케이션은 동적으로 변하는 트래픽과 워크로드를 효율적으로 처리하기 위해 자동 확장이 필수적입니다. Kubernetes는 기본적인 자동 확장 기능을 제공하지만, KEDA(Kubernetes Event-Driven Autoscaling)는 보다 세밀하고 이벤트 기반의 자동 확장을 가능하게 해줍니다. 이번 포스팅에서는 KEDA의 개념, 주요 기능, 그리고 사용 사례에 대해 알아보겠습니다.</p>
+<h3 id="keda란-무엇인가">KEDA란 무엇인가?<a hidden class="anchor" aria-hidden="true" href="#keda란-무엇인가">#</a></h3>
+<p><a href="https://keda.sh/">KEDA</a>(Kubernetes Event-Driven Autoscaling)는 Kubernetes와 함께 작동하도록 설계된 이벤트 기반 자동 확장 플랫폼입니다. KEDA는 Kubernetes 클러스터에서 애플리케이션을 안정적이고 확장 가능하게 실행할 수 있도록 지원합니다. KEDA는 애플리케이션의 이벤트 소스를 모니터링하고, 이벤트 볼륨에 따라 워크로드를 자동으로 확장하거나 축소합니다. 이를 통해 리소스 사용을 최적화하고 비용을 절감하며, 애플리케이션이 빠르게 반응하고 확장할 수 있도록 합니다.</p>
+<p>KEDA는 Kafka, Datadog, Prometheus, Cron 등 다양한 이벤트 소스를 지원합니다. 또한 이벤트 수, 이벤트 페이로드 크기 등에 따라 확장하는 다양한 전략을 제공합니다.</p>
+<h3 id="keda-vs-hpa-horizontalpodautoscaler">KEDA vs HPA (HorizontalPodAutoscaler)<a hidden class="anchor" aria-hidden="true" href="#keda-vs-hpa-horizontalpodautoscaler">#</a></h3>
+<p>HPA (HorizontalPodAutoscaler)는 Kubernetes 클러스터에서 실행 중인 애플리케이션의 리소스 사용량(CPU, 메모리 사용량)을 기반으로 POD를 확장하거나 축소합니다. 반면, KEDA (Kubernetes Event-Driven Autoscaling)는 이벤트 기반으로 Kubernetes 클러스터에서 실행 중인 애플리케이션의 POD를 확장하거나 축소합니다. KEDA는 다양한 이벤트 소스(예: 메시지 큐, 데이터베이스, HTTP 요청, Cron, 특정 시점의 메트릭 등)를 트리거로 사용하여 POD를 확장하거나 축소할 수 있습니다.</p>
+<h3 id="getting-started-with-keda">Getting Started with KEDA<a hidden class="anchor" aria-hidden="true" href="#getting-started-with-keda">#</a></h3>
+<h4 id="install">Install<a hidden class="anchor" aria-hidden="true" href="#install">#</a></h4>
+<p>KEDA를 Kubernetes 클러스터에 Helm을 사용하여 설치합니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ helm repo add kedacore https://kedacore.github.io/charts
+</span></span><span style="display:flex;"><span>$ helm repo update
+</span></span><span style="display:flex;"><span>$ helm install keda kedacore/keda --namespace keda --create-namespace
+</span></span></code></pre></div><h4 id="deployment-생성">Deployment 생성<a hidden class="anchor" aria-hidden="true" href="#deployment-생성">#</a></h4>
+<p>예시를 위해 nginx deployment를 생성합니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx-deployment</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx:1.14.2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
+</span></span></code></pre></div><h4 id="scaledobject-생성">ScaledObject 생성<a hidden class="anchor" aria-hidden="true" href="#scaledobject-생성">#</a></h4>
+<p>ScaledObject를 사용하여 특정 시간과 CPU 사용률을 기준으로 자동 확장을 설정합니다. CPU / Memory 사용률 기준 트리거를 설정하면 KEDA가 HPA (HorizontalPodAutoscaler)를 생성합니다. ScaledObject를 적용하면 오전 9시부터 10시까지 <code>nginx-deployment</code>의 replica 사이즈가 8개로 확장되는걸 확인할 수 있습니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">keda.sh/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ScaledObject</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx-scaledobject</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">maxReplicaCount</span>: <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">minReplicaCount</span>: <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">scaleTargetRef</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx-deployment</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">triggers</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">value</span>: <span style="color:#e6db74">&#34;50&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metricType</span>: <span style="color:#ae81ff">Utilization</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">cpu</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">desiredReplicas</span>: <span style="color:#e6db74">&#34;8&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">end</span>: <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">09</span> * * *
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">start</span>: <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">10</span> * * *
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">timezone</span>: <span style="color:#ae81ff">Asia/Seoul</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">cron</span>
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://code-chronicle.github.io/tags/kubernetes/">Kubernetes</a></li>
+      <li><a href="https://code-chronicle.github.io/tags/keda/">Keda</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2024 <a href="https://code-chronicle.github.io/">Code Chronicle</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

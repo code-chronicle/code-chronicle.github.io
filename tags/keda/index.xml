@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Keda on Code Chronicle</title>
+    <link>https://code-chronicle.github.io/tags/keda/</link>
+    <description>Recent content in Keda on Code Chronicle</description>
+    <generator>Hugo -- 0.127.0</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 03 Jul 2024 09:00:46 +0900</lastBuildDate>
+    <atom:link href="https://code-chronicle.github.io/tags/keda/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Getting Started with Keda</title>
+      <link>https://code-chronicle.github.io/kubernetes/getting-started-with-keda/</link>
+      <pubDate>Wed, 03 Jul 2024 09:00:46 +0900</pubDate>
+      <guid>https://code-chronicle.github.io/kubernetes/getting-started-with-keda/</guid>
+      <description>KEDA: Kubernetes Event-Driven Autoscaling 소개 클라우드 네이티브 애플리케이션은 동적으로 변하는 트래픽과 워크로드를 효율적으로 처리하기 위해 자동 확장이 필수적입니다. Kubernetes는 기본적인 자동 확장 기능을 제공하지만, KEDA(Kubernetes Event-Driven Autoscaling)는 보다 세밀하고 이벤트 기반의 자동 확장을 가능하게 해줍니다. 이번 포스팅에서는 KEDA의 개념, 주요 기능, 그리고 사용 사례에 대해 알아보겠습니다.
+KEDA란 무엇인가? KEDA(Kubernetes Event-Driven Autoscaling)는 Kubernetes와 함께 작동하도록 설계된 이벤트 기반 자동 확장 플랫폼입니다. KEDA는 Kubernetes 클러스터에서 애플리케이션을 안정적이고 확장 가능하게 실행할 수 있도록 지원합니다.</description>
+    </item>
+  </channel>
+</rss>
