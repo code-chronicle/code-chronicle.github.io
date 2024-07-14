@@ -6,8 +6,16 @@
     <description>Recent content in Kubernetes on Code Chronicle</description>
     <generator>Hugo -- 0.127.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 03 Jul 2024 09:00:46 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 12 Jul 2024 20:48:24 +0900</lastBuildDate>
     <atom:link href="https://code-chronicle.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kubernetes Service Type - ClusterIP</title>
+      <link>https://code-chronicle.github.io/kubernetes/kubernetes-service-clusterip/</link>
+      <pubDate>Fri, 12 Jul 2024 20:48:24 +0900</pubDate>
+      <guid>https://code-chronicle.github.io/kubernetes/kubernetes-service-clusterip/</guid>
+      <description>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ClusterIP에 대해 자세히 알아보겠습니다.
+ClusterIP란? ClusterIP는 Kubernetes Service의 기본 유형입니다. 이 유형은 클러스터 내부에서만 접근 가능한 가상 IP 주소를 할당하여, Pod 간의 통신을 용이하게 합니다. ClusterIP는 외부에서 접근할 수 없기 때문에 클러스터 내부에서의 서비스 디스커버리와 서버 간 통신 목적으로 사용됩니다.</description>
+    </item>
     <item>
       <title>Getting Started with Keda</title>
       <link>https://code-chronicle.github.io/kubernetes/getting-started-with-keda/</link>
