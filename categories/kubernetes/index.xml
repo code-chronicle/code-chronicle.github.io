@@ -6,8 +6,16 @@
     <description>Recent content in Kubernetes on Code Chronicle</description>
     <generator>Hugo -- 0.127.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 12 Jul 2024 20:48:24 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 14 Jul 2024 15:03:22 +0900</lastBuildDate>
     <atom:link href="https://code-chronicle.github.io/categories/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Argo Rollouts Introduction</title>
+      <link>https://code-chronicle.github.io/kubernetes/argo-rollouts-introduction/</link>
+      <pubDate>Sun, 14 Jul 2024 15:03:22 +0900</pubDate>
+      <guid>https://code-chronicle.github.io/kubernetes/argo-rollouts-introduction/</guid>
+      <description>일반적으로 Kubernetes 클러스터 상에 애플리케이션을 구동하고 상태를 관리하기 위해서 Deployment1 리소스를 활용합니다. Deployment에는 애플리케이션의 목표 상태(i.e. 애플리케이션 Pod의 개수, 애플리케이션의 버전 등)가 저장되어 있어, 목표 상태와 클러스터 상의 실제 상태를 일치하도록 관리합니다. 이는 Kubernetes에서 기본으로 제공되는 리소스로서 매우 유용하지만, 새로운 버전의 애플리케이션을 배포할 때 몇가지의 문제를 마주치게 됩니다.
+배포 진행 속도를 컨트롤할 수 없음 Blue/Green, Canary 등의 고도화된 배포 전략을 제공하지 않음 배포 과정에 문제가 생겼을 때, 수동으로 문제를 감지하고 롤백해야 함 물론 쿠버네티스 기본 리소스만으로도 위와 같은 문제들을 해결할 수 있지만, 이는 복잡한 아키텍처 설계를 필요로 합니다.</description>
+    </item>
     <item>
       <title>Kubernetes Service Type - ClusterIP</title>
       <link>https://code-chronicle.github.io/kubernetes/kubernetes-service-clusterip/</link>
