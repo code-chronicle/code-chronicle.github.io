@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Kubernetes Service Type - Loadbalancer | Code Chronicle</title>
+<meta name="keywords" content="kubernetes, service">
+<meta name="description" content="Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 Loadbalancer에 대해 자세히 알아보겠습니다.
+LoadBalancer란? LoadBalancer 타입은 퍼블릭 클라우드 환경에서 사용할 수 있으며, 클라우드 환경의 로드 밸런서를 생성하여 외부 트래픽을 Kubernetes 클러스터 내부의 서비스로 라우팅하는 데 사용됩니다. 이러한 로드 밸런서는 클러스터 외부에서 접근할 수 있는 IP 주소와 포트를 제공하여 외부 트래픽을 내부 서비스로 효율적으로 분배합니다.">
+<meta name="author" content="Kai">
+<link rel="canonical" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-loadbalancer/">
+<meta name="google-site-verification" content="XLYYgF1H1ZwMGCrNvrmYOBbxz4bLroXX1K9MfINRy3M">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9e9dd26a8d2ed3e32c08a1b5c82a7ac786127e923c340d2444676c8c7f643c29.css" integrity="sha256-np3Sao0u0&#43;MsCKG1yCp6x4YSfpI8NA0kRGdsjH9kPCk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://code-chronicle.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://code-chronicle.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://code-chronicle.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://code-chronicle.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://code-chronicle.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-loadbalancer/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+
+  
+
+<meta property="og:title" content="Kubernetes Service Type - Loadbalancer" />
+<meta property="og:description" content="Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 Loadbalancer에 대해 자세히 알아보겠습니다.
+LoadBalancer란? LoadBalancer 타입은 퍼블릭 클라우드 환경에서 사용할 수 있으며, 클라우드 환경의 로드 밸런서를 생성하여 외부 트래픽을 Kubernetes 클러스터 내부의 서비스로 라우팅하는 데 사용됩니다. 이러한 로드 밸런서는 클러스터 외부에서 접근할 수 있는 IP 주소와 포트를 제공하여 외부 트래픽을 내부 서비스로 효율적으로 분배합니다." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://code-chronicle.github.io/kubernetes/kubernetes-service-loadbalancer/" /><meta property="article:section" content="kubernetes" />
+<meta property="article:published_time" content="2024-07-25T08:57:23+09:00" />
+<meta property="article:modified_time" content="2024-07-25T08:57:23+09:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kubernetes Service Type - Loadbalancer"/>
+<meta name="twitter:description" content="Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 Loadbalancer에 대해 자세히 알아보겠습니다.
+LoadBalancer란? LoadBalancer 타입은 퍼블릭 클라우드 환경에서 사용할 수 있으며, 클라우드 환경의 로드 밸런서를 생성하여 외부 트래픽을 Kubernetes 클러스터 내부의 서비스로 라우팅하는 데 사용됩니다. 이러한 로드 밸런서는 클러스터 외부에서 접근할 수 있는 IP 주소와 포트를 제공하여 외부 트래픽을 내부 서비스로 효율적으로 분배합니다."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Kubernetes",
+      "item": "https://code-chronicle.github.io/kubernetes/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Kubernetes Service Type - Loadbalancer",
+      "item": "https://code-chronicle.github.io/kubernetes/kubernetes-service-loadbalancer/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Kubernetes Service Type - Loadbalancer",
+  "name": "Kubernetes Service Type - Loadbalancer",
+  "description": "Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 Loadbalancer에 대해 자세히 알아보겠습니다.\nLoadBalancer란? LoadBalancer 타입은 퍼블릭 클라우드 환경에서 사용할 수 있으며, 클라우드 환경의 로드 밸런서를 생성하여 외부 트래픽을 Kubernetes 클러스터 내부의 서비스로 라우팅하는 데 사용됩니다. 이러한 로드 밸런서는 클러스터 외부에서 접근할 수 있는 IP 주소와 포트를 제공하여 외부 트래픽을 내부 서비스로 효율적으로 분배합니다.",
+  "keywords": [
+    "kubernetes", "service"
+  ],
+  "articleBody": "Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 Loadbalancer에 대해 자세히 알아보겠습니다.\nLoadBalancer란? LoadBalancer 타입은 퍼블릭 클라우드 환경에서 사용할 수 있으며, 클라우드 환경의 로드 밸런서를 생성하여 외부 트래픽을 Kubernetes 클러스터 내부의 서비스로 라우팅하는 데 사용됩니다. 이러한 로드 밸런서는 클러스터 외부에서 접근할 수 있는 IP 주소와 포트를 제공하여 외부 트래픽을 내부 서비스로 효율적으로 분배합니다. 로드 밸런서는 비동기적으로 생성되며, 완료되기까지 시간이 걸릴 수 있습니다. 로드 밸런서가 성공적으로 프로비저닝되면, 해당 로드 밸런서에 대한 정보는 Kubernetes 서비스 객체의 .status.loadBalancer 필드에 저장됩니다.\n주요 특징 LoadBalancer 타입의 서비스는 퍼블릭 클라우드 환경에서만 사용가능하며, Network Load Balancer를 생성합니다. AWS의 경우 ELB (Elastic Load Balancer), GCP의 경우 GCLB (Google Cloud Load Balancer)를 생성합니다. Annotation으로 Network Load Balancer 설정을 제공합니다. LoadBalancer 서비스 생성하기 LoadBalancer 서비스를 생성하는 방법은 매우 간단합니다. 아래는 Nginx 애플리케이션을 대상으로 LoadBalancer 서비스를 생성하는 예제입니다.\nDeployment 정의 먼저 Nginx Pod를 배포하는 Deployment를 정의합니다.\napiVersion: apps/v1 kind: Deployment metadata: name: nginx-deployment namespace: default labels: app.kubernetes.io/name: nginx spec: replicas: 3 selector: matchLabels: app.kubernetes.io/name: nginx template: metadata: labels: app.kubernetes.io/name: nginx spec: containers: - name: nginx image: nginx:1.14.2 ports: - containerPort: 80 Service 정의 LoadBalancer 서비스를 정의하려면 type을 LoadBalancer로 지정해야 합니다.\nLoad balancer apiVersion: v1 kind: Service metadata: name: nginx-service namespace: default spec: type: LoadBalancer selector: app.kubernetes.io/name: nginx ports: - name: http protocol: TCP port: 80 targetPort: 80 Internal load balancer annotation을 사용하여 VPC 내부에서 private 통신이 가능한 Internal Load Balancer를 설정할 수 있습니다.\napiVersion: v1 kind: Service metadata: name: nginx-service namespace: default annotations: service.beta.kubernetes.io/aws-load-balancer-internal: \"true\" spec: type: LoadBalancer selector: app.kubernetes.io/name: nginx ports: - name: http protocol: TCP port: 80 targetPort: 80 위의 정의 파일을 통해 nginx-service라는 이름의 LoadBalancer 서비스를 생성할 수 있습니다. 이 서비스는 로드 밸런서를 통해 app.kubernetes.io/name: nginx 레이블을 가진 모든 Pod의 80번 포트로 트래픽을 전달합니다.\nkubectl 명령어로 조회하면 nodePort가 할당되어 있고, EXTERNAL-IP에서 로드 밸런서 도메인을 확인할 수 있습니다. LoadBalancer 타입의 서비스 생성시 nodePort(31003)가 자동으로 매핑됩니다. nodePort가 매핑되는걸 방지하려면 spec.allocateLoadBalancerNodePorts 값을 false로 설정하면 됩니다.\n$ kubectl get svc NAME TYPE CLUSTER-IP EXTERNAL-IP PORT(S) AGE nginx-service LoadBalancer 10.100.23.10 2d23lp02a22d35jhcs2s22de3fd35eee-b3s33dsf123dsf12.elb.ap-northeast-2.amazonaws.com 80:31003/TCP 1d 결론 LoadBalancer 타입의 서비스는 퍼블릭 클라우드 환경에서 Kubernetes 클러스터 외부에서 들어오는 트래픽을 처리하는 효율적인 방법입니다. Service는 OSI 7계층 중 4계층(Layer 4)에서 통신을 처리되므로 LoadBalancer 타입의 서비스는 Network Load Balancer만 지원합니다.\nReferences Kubernets Service - Loadbalancer Kubernets Service - Internal Load Balancer AWS Kubernets Service Annotation ",
+  "wordCount" : "390",
+  "inLanguage": "en",
+  "datePublished": "2024-07-25T08:57:23+09:00",
+  "dateModified": "2024-07-25T08:57:23+09:00",
+  "author":[{
+    "@type": "Person",
+    "name": "Kai"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://code-chronicle.github.io/kubernetes/kubernetes-service-loadbalancer/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Code Chronicle",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://code-chronicle.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://code-chronicle.github.io/" accesskey="h" title="Code Chronicle (Alt + H)">Code Chronicle</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://code-chronicle.github.io/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://code-chronicle.github.io/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://code-chronicle.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://code-chronicle.github.io/kubernetes/">Kubernetes</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Kubernetes Service Type - Loadbalancer
+    </h1>
+    <div class="post-meta"><span title='2024-07-25 08:57:23 +0900 KST'>July 25, 2024</span>&nbsp;·&nbsp;Kai
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#loadbalancer%eb%9e%80" aria-label="LoadBalancer란?">LoadBalancer란?</a></li>
+                <li>
+                    <a href="#%ec%a3%bc%ec%9a%94-%ed%8a%b9%ec%a7%95" aria-label="주요 특징">주요 특징</a></li>
+                <li>
+                    <a href="#loadbalancer-%ec%84%9c%eb%b9%84%ec%8a%a4-%ec%83%9d%ec%84%b1%ed%95%98%ea%b8%b0" aria-label="LoadBalancer 서비스 생성하기">LoadBalancer 서비스 생성하기</a><ul>
+                        
+                <li>
+                    <a href="#deployment-%ec%a0%95%ec%9d%98" aria-label="Deployment 정의">Deployment 정의</a></li>
+                <li>
+                    <a href="#service-%ec%a0%95%ec%9d%98" aria-label="Service 정의">Service 정의</a></li>
+                <li>
+                    <a href="#load-balancer" aria-label="Load balancer">Load balancer</a></li>
+                <li>
+                    <a href="#internal-load-balancer" aria-label="Internal load balancer">Internal load balancer</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%ea%b2%b0%eb%a1%a0" aria-label="결론">결론</a></li>
+                <li>
+                    <a href="#references" aria-label="References">References</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 Loadbalancer에 대해 자세히 알아보겠습니다.</p>
+<h2 id="loadbalancer란">LoadBalancer란?<a hidden class="anchor" aria-hidden="true" href="#loadbalancer란">#</a></h2>
+<p>LoadBalancer 타입은 퍼블릭 클라우드 환경에서 사용할 수 있으며, 클라우드 환경의 로드 밸런서를 생성하여 외부 트래픽을 Kubernetes 클러스터 내부의 서비스로 라우팅하는 데 사용됩니다. 이러한 로드 밸런서는 클러스터 외부에서 접근할 수 있는 IP 주소와 포트를 제공하여 외부 트래픽을 내부 서비스로 효율적으로 분배합니다. 로드 밸런서는 비동기적으로 생성되며, 완료되기까지 시간이 걸릴 수 있습니다. 로드 밸런서가 성공적으로 프로비저닝되면, 해당 로드 밸런서에 대한 정보는 Kubernetes 서비스 객체의 .status.loadBalancer 필드에 저장됩니다.</p>
+<h2 id="주요-특징">주요 특징<a hidden class="anchor" aria-hidden="true" href="#주요-특징">#</a></h2>
+<ol>
+<li>LoadBalancer 타입의 서비스는 퍼블릭 클라우드 환경에서만 사용가능하며, Network Load Balancer를 생성합니다. AWS의 경우 ELB (Elastic Load Balancer), GCP의 경우 GCLB (Google Cloud Load Balancer)를 생성합니다.</li>
+<li><a href="https://cloud-provider-aws.sigs.k8s.io/service_controller/">Annotation</a>으로 Network Load Balancer 설정을 제공합니다.</li>
+</ol>
+<h2 id="loadbalancer-서비스-생성하기">LoadBalancer 서비스 생성하기<a hidden class="anchor" aria-hidden="true" href="#loadbalancer-서비스-생성하기">#</a></h2>
+<p>LoadBalancer 서비스를 생성하는 방법은 매우 간단합니다. 아래는 Nginx 애플리케이션을 대상으로 LoadBalancer 서비스를 생성하는 예제입니다.</p>
+<h3 id="deployment-정의">Deployment 정의<a hidden class="anchor" aria-hidden="true" href="#deployment-정의">#</a></h3>
+<p>먼저 Nginx Pod를 배포하는 Deployment를 정의합니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx-deployment</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">app.kubernetes.io/name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">app.kubernetes.io/name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">app.kubernetes.io/name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx:1.14.2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
+</span></span></code></pre></div><h3 id="service-정의">Service 정의<a hidden class="anchor" aria-hidden="true" href="#service-정의">#</a></h3>
+<p>LoadBalancer 서비스를 정의하려면 type을 LoadBalancer로 지정해야 합니다.</p>
+<h3 id="load-balancer">Load balancer<a hidden class="anchor" aria-hidden="true" href="#load-balancer">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx-service</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">LoadBalancer</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">app.kubernetes.io/name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">http</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">80</span>
+</span></span></code></pre></div><h3 id="internal-load-balancer">Internal load balancer<a hidden class="anchor" aria-hidden="true" href="#internal-load-balancer">#</a></h3>
+<p><code>annotation</code>을 사용하여 VPC 내부에서 private 통신이 가능한 <a href="https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer">Internal Load Balancer</a>를 설정할 수 있습니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx-service</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">service.beta.kubernetes.io/aws-load-balancer-internal</span>: <span style="color:#e6db74">&#34;true&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">LoadBalancer</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">app.kubernetes.io/name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">http</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">80</span>
+</span></span></code></pre></div><p>위의 정의 파일을 통해 nginx-service라는 이름의 LoadBalancer 서비스를 생성할 수 있습니다. 이 서비스는 로드 밸런서를 통해 <code>app.kubernetes.io/name: nginx</code> 레이블을 가진 모든 Pod의 80번 포트로 트래픽을 전달합니다.</p>
+<p><code>kubectl</code> 명령어로 조회하면 nodePort가 할당되어 있고, <code>EXTERNAL-IP</code>에서 로드 밸런서 도메인을 확인할 수 있습니다. LoadBalancer 타입의 서비스 생성시 nodePort(31003)가 자동으로 매핑됩니다. nodePort가 매핑되는걸 방지하려면 <code>spec.allocateLoadBalancerNodePorts</code> 값을  <code>false</code>로 설정하면 됩니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get svc
+</span></span><span style="display:flex;"><span>NAME            TYPE           CLUSTER-IP      EXTERNAL-IP                                                                           PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>        AGE
+</span></span><span style="display:flex;"><span>nginx-service   LoadBalancer   10.100.23.10    2d23lp02a22d35jhcs2s22de3fd35eee-b3s33dsf123dsf12.elb.ap-northeast-2.amazonaws.com    80:31003/TCP   1d
+</span></span></code></pre></div><h2 id="결론">결론<a hidden class="anchor" aria-hidden="true" href="#결론">#</a></h2>
+<p>LoadBalancer 타입의 서비스는 퍼블릭 클라우드 환경에서 Kubernetes 클러스터 외부에서 들어오는 트래픽을 처리하는 효율적인 방법입니다. Service는 OSI 7계층 중 4계층(Layer 4)에서 통신을 처리되므로 LoadBalancer 타입의 서비스는 Network Load Balancer만 지원합니다.</p>
+<h2 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h2>
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/-services-networking/service/#loadbalancer">Kubernets Service - Loadbalancer</a></li>
+<li><a href="https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer">Kubernets Service - Internal Load Balancer</a></li>
+<li><a href="https://cloud-provider-aws.sigs.k8s.io/service_controller/">AWS Kubernets Service Annotation</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://code-chronicle.github.io/tags/kubernetes/">Kubernetes</a></li>
+      <li><a href="https://code-chronicle.github.io/tags/service/">Service</a></li>
+    </ul>
+  </footer><div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "code-chronicle-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2024 <a href="https://code-chronicle.github.io/">Code Chronicle</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
