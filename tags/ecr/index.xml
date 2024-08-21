@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Ecr on Code Chronicle</title>
+    <link>https://code-chronicle.github.io/tags/ecr/</link>
+    <description>Recent content in Ecr on Code Chronicle</description>
+    <generator>Hugo -- 0.127.0</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 16 Aug 2024 08:43:51 +0900</lastBuildDate>
+    <atom:link href="https://code-chronicle.github.io/tags/ecr/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AWS ECR Multi Architecture Images</title>
+      <link>https://code-chronicle.github.io/aws/aws-ecr-multi-architecture-images/</link>
+      <pubDate>Fri, 16 Aug 2024 08:43:51 +0900</pubDate>
+      <guid>https://code-chronicle.github.io/aws/aws-ecr-multi-architecture-images/</guid>
+      <description>Amazon Elastic Container Registry(AWS ECR)는 AWS에서 제공하는 container image를 저장하고 관리할 수 있는 서비스입니다. 이 서비스의 멀티 아키텍처(Multi-Architecture) 기능을 사용하면 서로 다른 CPU 아키텍처(예: x86, ARM 등)를 사용하는 시스템에서도 동일한 container image를 실행할 수 있습니다. 즉, 하나의 container image를 생성하면, 이를 다양한 하드웨어 환경에서 호환되게끔 지원해 주는 기능을 제공한다는 의미입니다. 이를 통해 개발자는 하나의 이미지로 다양한 환경을 지원할 수 있어 운영 효율성이 높아집니다. 아래의 예제에서는 Docker 명령어를 사용하였습니다.
+AWS ECR Multi Architecture Image Build (buildx) Multi Architecture Image를 빌드하는 첫 번째 방법은 Docker Buildx 명령어를 사용하는 것입니다.</description>
+    </item>
+  </channel>
+</rss>
