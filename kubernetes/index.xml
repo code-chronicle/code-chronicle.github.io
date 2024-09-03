@@ -6,8 +6,16 @@
     <description>Recent content in Kubernetes on Code Chronicle</description>
     <generator>Hugo -- 0.127.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 25 Jul 2024 08:57:23 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 02 Sep 2024 09:39:15 +0900</lastBuildDate>
     <atom:link href="https://code-chronicle.github.io/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kubernetes Service Type - ExternalName</title>
+      <link>https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/</link>
+      <pubDate>Mon, 02 Sep 2024 09:39:15 +0900</pubDate>
+      <guid>https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/</guid>
+      <description>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ExternalName에 대해 자세히 알아보겠습니다.
+ExternalName 이란? ExternalName 서비스는 Kubernetes 클러스터 외부의 서비스로 트래픽을 전달하는 특별한 서비스 유형입니다. 이 서비스는 Kubernetes 클러스터 외부의 도메인 이름(DNS)으로 트래픽을 라우팅하도록 구성됩니다. 즉, ExternalName 서비스는 외부 서비스에 대한 내부 DNS 엔트리를 생성하여 Kubernetes 클러스터 내의 애플리케이션이 외부 서비스를 쉽게 참조할 수 있게 해줍니다.</description>
+    </item>
     <item>
       <title>Kubernetes Service Type - Loadbalancer</title>
       <link>https://code-chronicle.github.io/kubernetes/kubernetes-service-loadbalancer/</link>
@@ -15,6 +23,14 @@
       <guid>https://code-chronicle.github.io/kubernetes/kubernetes-service-loadbalancer/</guid>
       <description>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 Loadbalancer에 대해 자세히 알아보겠습니다.
 LoadBalancer란? LoadBalancer 타입은 퍼블릭 클라우드 환경에서 사용할 수 있으며, 클라우드 환경의 로드 밸런서를 생성하여 외부 트래픽을 Kubernetes 클러스터 내부의 서비스로 라우팅하는 데 사용됩니다. 이러한 로드 밸런서는 클러스터 외부에서 접근할 수 있는 IP 주소와 포트를 제공하여 외부 트래픽을 내부 서비스로 효율적으로 분배합니다.</description>
+    </item>
+    <item>
+      <title>Argo Rollouts (2) - Blue/Green 배포</title>
+      <link>https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/</link>
+      <pubDate>Sun, 21 Jul 2024 21:03:24 +0900</pubDate>
+      <guid>https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/</guid>
+      <description>앞선 포스트에서 Argo Rollouts를 설치하고 간단한 예시를 통해 배포 전략이 적용되는 모습을 확인해보았습니다. .spec.strategy 필드를 통하여 간단한 배포 전략을 설정하고 실제 배포를 진행했는데요. Argo Rollouts는 필요에 따라 해당 필드를 다양하게 세팅하여 사용할 수 있습니다. 대표적인 방식으로 Blue/Green 배포 전략의 적용이 있습니다.
+Blue/Green 배포 1 apiVersion: argoproj.io/v1alpha1 kind: Rollout metadata: name: rollout-bluegreen spec: replicas: 5 revisionHistoryLimit: 1 selector: matchLabels: app: rollout-bluegreen template: metadata: labels: app: rollout-bluegreen spec: containers: - name: nginx image: nginx:1.</description>
     </item>
     <item>
       <title>Kubernetes Service Type - NodePort</title>
@@ -26,7 +42,7 @@ NodePort란? NodePort는 클러스터 외부에서 Kubernetes 클러스터 내�
 주요 특징 NodePort는 Kubernetes 클러스터 내 노드의 특정 포트(30000-32767)를 열어 트래픽을 수신합니다.</description>
     </item>
     <item>
-      <title>Argo Rollouts Introduction</title>
+      <title>Argo Rollouts (1) - Introduction</title>
       <link>https://code-chronicle.github.io/kubernetes/argo-rollouts-introduction/</link>
       <pubDate>Sun, 14 Jul 2024 15:03:22 +0900</pubDate>
       <guid>https://code-chronicle.github.io/kubernetes/argo-rollouts-introduction/</guid>

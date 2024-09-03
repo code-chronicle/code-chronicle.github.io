@@ -146,6 +146,19 @@
 
 <article class="first-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Kubernetes Service Type - ExternalName
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ExternalName에 대해 자세히 알아보겠습니다.
+ExternalName 이란? ExternalName 서비스는 Kubernetes 클러스터 외부의 서비스로 트래픽을 전달하는 특별한 서비스 유형입니다. 이 서비스는 Kubernetes 클러스터 외부의 도메인 이름(DNS)으로 트래픽을 라우팅하도록 구성됩니다. 즉, ExternalName 서비스는 외부 서비스에 대한 내부 DNS 엔트리를 생성하여 Kubernetes 클러스터 내의 애플리케이션이 외부 서비스를 쉽게 참조할 수 있게 해줍니다....</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-02 09:39:15 +0900 KST'>September 2, 2024</span>&nbsp;·&nbsp;Kai</footer>
+  <a class="entry-link" aria-label="post link to Kubernetes Service Type - ExternalName" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">AWS ECR Multi Architecture Images
     </h2>
   </header>
@@ -172,6 +185,19 @@ LoadBalancer란? LoadBalancer 타입은 퍼블릭 클라우드 환경에서 사�
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Argo Rollouts (2) - Blue/Green 배포
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>앞선 포스트에서 Argo Rollouts를 설치하고 간단한 예시를 통해 배포 전략이 적용되는 모습을 확인해보았습니다. .spec.strategy 필드를 통하여 간단한 배포 전략을 설정하고 실제 배포를 진행했는데요. Argo Rollouts는 필요에 따라 해당 필드를 다양하게 세팅하여 사용할 수 있습니다. 대표적인 방식으로 Blue/Green 배포 전략의 적용이 있습니다.
+Blue/Green 배포 1 apiVersion: argoproj.io/v1alpha1 kind: Rollout metadata: name: rollout-bluegreen spec: replicas: 5 revisionHistoryLimit: 1 selector: matchLabels: app: rollout-bluegreen template: metadata: labels: app: rollout-bluegreen spec: containers: - name: nginx image: nginx:1....</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-07-21 21:03:24 +0900 KST'>July 21, 2024</span>&nbsp;·&nbsp;Daram</footer>
+  <a class="entry-link" aria-label="post link to Argo Rollouts (2) - Blue/Green 배포" href="https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Kubernetes Service Type - NodePort
     </h2>
   </header>
@@ -182,32 +208,6 @@ NodePort란? NodePort는 클러스터 외부에서 Kubernetes 클러스터 내�
   </div>
   <footer class="entry-footer"><span title='2024-07-16 18:56:08 +0900 KST'>July 16, 2024</span>&nbsp;·&nbsp;Kai</footer>
   <a class="entry-link" aria-label="post link to Kubernetes Service Type - NodePort" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-nodeport/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Argo Rollouts Introduction
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>일반적으로 Kubernetes 클러스터 상에 애플리케이션을 구동하고 상태를 관리하기 위해서 Deployment1 리소스를 활용합니다. Deployment에는 애플리케이션의 목표 상태(i.e. 애플리케이션 Pod의 개수, 애플리케이션의 버전 등)가 저장되어 있어, 목표 상태와 클러스터 상의 실제 상태를 일치하도록 관리합니다. 이는 Kubernetes에서 기본으로 제공되는 리소스로서 매우 유용하지만, 새로운 버전의 애플리케이션을 배포할 때 몇가지의 문제를 마주치게 됩니다.
-배포 진행 속도를 컨트롤할 수 없음 Blue/Green, Canary 등의 고도화된 배포 전략을 제공하지 않음 배포 과정에 문제가 생겼을 때, 수동으로 문제를 감지하고 롤백해야 함 물론 쿠버네티스 기본 리소스만으로도 위와 같은 문제들을 해결할 수 있지만, 이는 복잡한 아키텍처 설계를 필요로 합니다....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-14 15:03:22 +0900 KST'>July 14, 2024</span>&nbsp;·&nbsp;Daram</footer>
-  <a class="entry-link" aria-label="post link to Argo Rollouts Introduction" href="https://code-chronicle.github.io/kubernetes/argo-rollouts-introduction/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Kubernetes Service Type - ClusterIP
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ClusterIP에 대해 자세히 알아보겠습니다.
-ClusterIP란? ClusterIP는 Kubernetes Service의 기본 유형입니다. 이 유형은 클러스터 내부에서만 접근 가능한 가상 IP 주소를 할당하여, Pod 간의 통신을 용이하게 합니다. ClusterIP는 외부에서 접근할 수 없기 때문에 클러스터 내부에서의 서비스 디스커버리와 서버 간 통신 목적으로 사용됩니다....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-12 20:48:24 +0900 KST'>July 12, 2024</span>&nbsp;·&nbsp;Kai</footer>
-  <a class="entry-link" aria-label="post link to Kubernetes Service Type - ClusterIP" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-clusterip/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

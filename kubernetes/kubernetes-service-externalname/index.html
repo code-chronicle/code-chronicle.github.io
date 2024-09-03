@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Kubernetes Service Type - ExternalName | Code Chronicle</title>
+<meta name="keywords" content="kubernetes, service">
+<meta name="description" content="Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ExternalName에 대해 자세히 알아보겠습니다.
+ExternalName 이란? ExternalName 서비스는 Kubernetes 클러스터 외부의 서비스로 트래픽을 전달하는 특별한 서비스 유형입니다. 이 서비스는 Kubernetes 클러스터 외부의 도메인 이름(DNS)으로 트래픽을 라우팅하도록 구성됩니다. 즉, ExternalName 서비스는 외부 서비스에 대한 내부 DNS 엔트리를 생성하여 Kubernetes 클러스터 내의 애플리케이션이 외부 서비스를 쉽게 참조할 수 있게 해줍니다.">
+<meta name="author" content="Kai">
+<link rel="canonical" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/">
+<meta name="google-site-verification" content="XLYYgF1H1ZwMGCrNvrmYOBbxz4bLroXX1K9MfINRy3M">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9e9dd26a8d2ed3e32c08a1b5c82a7ac786127e923c340d2444676c8c7f643c29.css" integrity="sha256-np3Sao0u0&#43;MsCKG1yCp6x4YSfpI8NA0kRGdsjH9kPCk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://code-chronicle.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://code-chronicle.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://code-chronicle.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://code-chronicle.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://code-chronicle.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+
+  
+
+<meta property="og:title" content="Kubernetes Service Type - ExternalName" />
+<meta property="og:description" content="Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ExternalName에 대해 자세히 알아보겠습니다.
+ExternalName 이란? ExternalName 서비스는 Kubernetes 클러스터 외부의 서비스로 트래픽을 전달하는 특별한 서비스 유형입니다. 이 서비스는 Kubernetes 클러스터 외부의 도메인 이름(DNS)으로 트래픽을 라우팅하도록 구성됩니다. 즉, ExternalName 서비스는 외부 서비스에 대한 내부 DNS 엔트리를 생성하여 Kubernetes 클러스터 내의 애플리케이션이 외부 서비스를 쉽게 참조할 수 있게 해줍니다." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/" /><meta property="article:section" content="kubernetes" />
+<meta property="article:published_time" content="2024-09-02T09:39:15+09:00" />
+<meta property="article:modified_time" content="2024-09-02T09:39:15+09:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kubernetes Service Type - ExternalName"/>
+<meta name="twitter:description" content="Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ExternalName에 대해 자세히 알아보겠습니다.
+ExternalName 이란? ExternalName 서비스는 Kubernetes 클러스터 외부의 서비스로 트래픽을 전달하는 특별한 서비스 유형입니다. 이 서비스는 Kubernetes 클러스터 외부의 도메인 이름(DNS)으로 트래픽을 라우팅하도록 구성됩니다. 즉, ExternalName 서비스는 외부 서비스에 대한 내부 DNS 엔트리를 생성하여 Kubernetes 클러스터 내의 애플리케이션이 외부 서비스를 쉽게 참조할 수 있게 해줍니다."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Kubernetes",
+      "item": "https://code-chronicle.github.io/kubernetes/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Kubernetes Service Type - ExternalName",
+      "item": "https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Kubernetes Service Type - ExternalName",
+  "name": "Kubernetes Service Type - ExternalName",
+  "description": "Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ExternalName에 대해 자세히 알아보겠습니다.\nExternalName 이란? ExternalName 서비스는 Kubernetes 클러스터 외부의 서비스로 트래픽을 전달하는 특별한 서비스 유형입니다. 이 서비스는 Kubernetes 클러스터 외부의 도메인 이름(DNS)으로 트래픽을 라우팅하도록 구성됩니다. 즉, ExternalName 서비스는 외부 서비스에 대한 내부 DNS 엔트리를 생성하여 Kubernetes 클러스터 내의 애플리케이션이 외부 서비스를 쉽게 참조할 수 있게 해줍니다.",
+  "keywords": [
+    "kubernetes", "service"
+  ],
+  "articleBody": "Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ExternalName에 대해 자세히 알아보겠습니다.\nExternalName 이란? ExternalName 서비스는 Kubernetes 클러스터 외부의 서비스로 트래픽을 전달하는 특별한 서비스 유형입니다. 이 서비스는 Kubernetes 클러스터 외부의 도메인 이름(DNS)으로 트래픽을 라우팅하도록 구성됩니다. 즉, ExternalName 서비스는 외부 서비스에 대한 내부 DNS 엔트리를 생성하여 Kubernetes 클러스터 내의 애플리케이션이 외부 서비스를 쉽게 참조할 수 있게 해줍니다. 이 서비스 유형은 실제 네트워크 프록시나 로드 밸런서를 생성하지 않으며, 클러스터 내에서 정의된 DNS 이름을 외부 DNS 이름으로 단순히 매핑합니다.\nExternalName 서비스의 사용 사례 Kubernetes 클러스터 내부에서 외부 서비스(예: 외부 데이터베이스)에 연결할 때, ExternalName 서비스를 사용하여 외부 서비스의 DNS 이름을 클러스터 내부의 이름으로 매핑할 수 있습니다. 이 방식은 외부 서비스의 DNS 이름이 변경되더라도 모든 애플리케이션을 수정할 필요 없이 ExternalName 서비스만 업데이트하면 되므로 편리합니다. 그러나 HTTP/HTTPS 프로토콜에서는 클러스터 내부에서 사용하는 도메인과 실제 도메인이 다르기 때문에 연결이 실패할 수 있으니 주의해서 사용해야 합니다.\nExternalName 서비스 생성하기 apiVersion: v1 kind: Service metadata: name: mysql spec: type: ExternalName externalName: my.database.example.com mysql이라는 이름의 ExternalName 서비스를 정의하며, 이 서비스는 클러스터 내부에서 my.database.example.com 이라는 외부 도메인 이름을 가리키도록 설정되어 있습니다. 이제 클러스터 내부의 애플리케이션은 mysql.default.svc.cluster.local DNS를 사용하여 my.database.example.com을 연결할 수 있습니다.\n결론 Kubernetes의 ExternalName 서비스는 클러스터 외부의 서비스를 내부 도메인으로 간편하게 참조할 수 있는 유용한 도구입니다. 하지만 외부 네트워크와의 통합, 네트워크 지연, 외부 DNS 의존성 등의 문제를 고려해야 하므로, ExternalName 서비스 사용을 권장하진 않습니다.\nReferences Kubernets Service - ExternalName ",
+  "wordCount" : "243",
+  "inLanguage": "en",
+  "datePublished": "2024-09-02T09:39:15+09:00",
+  "dateModified": "2024-09-02T09:39:15+09:00",
+  "author":[{
+    "@type": "Person",
+    "name": "Kai"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Code Chronicle",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://code-chronicle.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://code-chronicle.github.io/" accesskey="h" title="Code Chronicle (Alt + H)">Code Chronicle</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://code-chronicle.github.io/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://code-chronicle.github.io/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://code-chronicle.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://code-chronicle.github.io/kubernetes/">Kubernetes</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Kubernetes Service Type - ExternalName
+    </h1>
+    <div class="post-meta"><span title='2024-09-02 09:39:15 +0900 KST'>September 2, 2024</span>&nbsp;·&nbsp;Kai
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#externalname-%ec%9d%b4%eb%9e%80" aria-label="ExternalName 이란?">ExternalName 이란?</a></li>
+                <li>
+                    <a href="#externalname-%ec%84%9c%eb%b9%84%ec%8a%a4%ec%9d%98-%ec%82%ac%ec%9a%a9-%ec%82%ac%eb%a1%80" aria-label="ExternalName 서비스의 사용 사례">ExternalName 서비스의 사용 사례</a></li>
+                <li>
+                    <a href="#externalname-%ec%84%9c%eb%b9%84%ec%8a%a4-%ec%83%9d%ec%84%b1%ed%95%98%ea%b8%b0" aria-label="ExternalName 서비스 생성하기">ExternalName 서비스 생성하기</a></li>
+                <li>
+                    <a href="#%ea%b2%b0%eb%a1%a0" aria-label="결론">결론</a></li>
+                <li>
+                    <a href="#references" aria-label="References">References</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ExternalName에 대해 자세히 알아보겠습니다.</p>
+<h2 id="externalname-이란">ExternalName 이란?<a hidden class="anchor" aria-hidden="true" href="#externalname-이란">#</a></h2>
+<p>ExternalName 서비스는 Kubernetes 클러스터 외부의 서비스로 트래픽을 전달하는 특별한 서비스 유형입니다. 이 서비스는 Kubernetes 클러스터 외부의 도메인 이름(DNS)으로 트래픽을 라우팅하도록 구성됩니다. 즉, ExternalName 서비스는 외부 서비스에 대한 내부 DNS 엔트리를 생성하여 Kubernetes 클러스터 내의 애플리케이션이 외부 서비스를 쉽게 참조할 수 있게 해줍니다. 이 서비스 유형은 실제 네트워크 프록시나 로드 밸런서를 생성하지 않으며, 클러스터 내에서 정의된 DNS 이름을 외부 DNS 이름으로 단순히 매핑합니다.</p>
+<h2 id="externalname-서비스의-사용-사례">ExternalName 서비스의 사용 사례<a hidden class="anchor" aria-hidden="true" href="#externalname-서비스의-사용-사례">#</a></h2>
+<p>Kubernetes 클러스터 내부에서 외부 서비스(예: 외부 데이터베이스)에 연결할 때, ExternalName 서비스를 사용하여 외부 서비스의 DNS 이름을 클러스터 내부의 이름으로 매핑할 수 있습니다. 이 방식은 외부 서비스의 DNS 이름이 변경되더라도 모든 애플리케이션을 수정할 필요 없이 ExternalName 서비스만 업데이트하면 되므로 편리합니다. 그러나 HTTP/HTTPS 프로토콜에서는 클러스터 내부에서 사용하는 도메인과 실제 도메인이 다르기 때문에 연결이 실패할 수 있으니 주의해서 사용해야 합니다.</p>
+<h2 id="externalname-서비스-생성하기">ExternalName 서비스 생성하기<a hidden class="anchor" aria-hidden="true" href="#externalname-서비스-생성하기">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mysql</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">ExternalName</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">externalName</span>: <span style="color:#ae81ff">my.database.example.com</span>
+</span></span></code></pre></div><p>mysql이라는 이름의 ExternalName 서비스를 정의하며, 이 서비스는 클러스터 내부에서 my.database.example.com 이라는 외부 도메인 이름을 가리키도록 설정되어 있습니다. 이제 클러스터 내부의 애플리케이션은 <code>mysql.default.svc.cluster.local</code> DNS를 사용하여 my.database.example.com을 연결할 수 있습니다.</p>
+<h2 id="결론">결론<a hidden class="anchor" aria-hidden="true" href="#결론">#</a></h2>
+<p>Kubernetes의 ExternalName 서비스는 클러스터 외부의 서비스를 내부 도메인으로 간편하게 참조할 수 있는 유용한 도구입니다. 하지만 외부 네트워크와의 통합, 네트워크 지연, 외부 DNS 의존성 등의 문제를 고려해야 하므로, ExternalName 서비스 사용을 권장하진 않습니다.</p>
+<h2 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h2>
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/services-networking/service/#externalname">Kubernets Service - ExternalName</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://code-chronicle.github.io/tags/kubernetes/">Kubernetes</a></li>
+      <li><a href="https://code-chronicle.github.io/tags/service/">Service</a></li>
+    </ul>
+  </footer><div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "code-chronicle-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2024 <a href="https://code-chronicle.github.io/">Code Chronicle</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

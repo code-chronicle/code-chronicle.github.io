@@ -6,10 +6,18 @@
     <description>Recent content in Argo-Rollouts on Code Chronicle</description>
     <generator>Hugo -- 0.127.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 14 Jul 2024 15:03:22 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 21 Jul 2024 21:03:24 +0900</lastBuildDate>
     <atom:link href="https://code-chronicle.github.io/tags/argo-rollouts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Argo Rollouts Introduction</title>
+      <title>Argo Rollouts (2) - Blue/Green 배포</title>
+      <link>https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/</link>
+      <pubDate>Sun, 21 Jul 2024 21:03:24 +0900</pubDate>
+      <guid>https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/</guid>
+      <description>앞선 포스트에서 Argo Rollouts를 설치하고 간단한 예시를 통해 배포 전략이 적용되는 모습을 확인해보았습니다. .spec.strategy 필드를 통하여 간단한 배포 전략을 설정하고 실제 배포를 진행했는데요. Argo Rollouts는 필요에 따라 해당 필드를 다양하게 세팅하여 사용할 수 있습니다. 대표적인 방식으로 Blue/Green 배포 전략의 적용이 있습니다.
+Blue/Green 배포 1 apiVersion: argoproj.io/v1alpha1 kind: Rollout metadata: name: rollout-bluegreen spec: replicas: 5 revisionHistoryLimit: 1 selector: matchLabels: app: rollout-bluegreen template: metadata: labels: app: rollout-bluegreen spec: containers: - name: nginx image: nginx:1.</description>
+    </item>
+    <item>
+      <title>Argo Rollouts (1) - Introduction</title>
       <link>https://code-chronicle.github.io/kubernetes/argo-rollouts-introduction/</link>
       <pubDate>Sun, 14 Jul 2024 15:03:22 +0900</pubDate>
       <guid>https://code-chronicle.github.io/kubernetes/argo-rollouts-introduction/</guid>

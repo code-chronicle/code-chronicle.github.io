@@ -2,6 +2,46 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://code-chronicle.github.io/categories/</loc>
+    <lastmod>2024-09-02T09:39:15+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/</loc>
+    <lastmod>2024-09-02T09:39:15+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/tags/kubernetes/</loc>
+    <lastmod>2024-09-02T09:39:15+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/kubernetes/</loc>
+    <lastmod>2024-09-02T09:39:15+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/categories/kubernetes/</loc>
+    <lastmod>2024-09-02T09:39:15+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/</loc>
+    <lastmod>2024-09-02T09:39:15+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/tags/service/</loc>
+    <lastmod>2024-09-02T09:39:15+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/tags/</loc>
+    <lastmod>2024-09-02T09:39:15+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>https://code-chronicle.github.io/tags/aws/</loc>
     <lastmod>2024-08-16T08:43:51+09:00</lastmod>
     <changefreq>daily</changefreq>
@@ -22,16 +62,6 @@
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://code-chronicle.github.io/categories/</loc>
-    <lastmod>2024-08-16T08:43:51+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://code-chronicle.github.io/</loc>
-    <lastmod>2024-08-16T08:43:51+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
     <loc>https://code-chronicle.github.io/tags/container/</loc>
     <lastmod>2024-08-16T08:43:51+09:00</lastmod>
     <changefreq>daily</changefreq>
@@ -47,33 +77,23 @@
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://code-chronicle.github.io/tags/</loc>
-    <lastmod>2024-08-16T08:43:51+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://code-chronicle.github.io/tags/kubernetes/</loc>
-    <lastmod>2024-07-25T08:57:23+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://code-chronicle.github.io/kubernetes/</loc>
-    <lastmod>2024-07-25T08:57:23+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://code-chronicle.github.io/categories/kubernetes/</loc>
-    <lastmod>2024-07-25T08:57:23+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
     <loc>https://code-chronicle.github.io/kubernetes/kubernetes-service-loadbalancer/</loc>
     <lastmod>2024-07-25T08:57:23+09:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://code-chronicle.github.io/tags/service/</loc>
-    <lastmod>2024-07-25T08:57:23+09:00</lastmod>
+    <loc>https://code-chronicle.github.io/tags/argo/</loc>
+    <lastmod>2024-07-21T21:03:24+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/</loc>
+    <lastmod>2024-07-21T21:03:24+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/tags/argo-rollouts/</loc>
+    <lastmod>2024-07-21T21:03:24+09:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
@@ -82,17 +102,7 @@
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://code-chronicle.github.io/tags/argo/</loc>
-    <lastmod>2024-07-14T15:03:22+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
     <loc>https://code-chronicle.github.io/kubernetes/argo-rollouts-introduction/</loc>
-    <lastmod>2024-07-14T15:03:22+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://code-chronicle.github.io/tags/argo-rollouts/</loc>
     <lastmod>2024-07-14T15:03:22+09:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>

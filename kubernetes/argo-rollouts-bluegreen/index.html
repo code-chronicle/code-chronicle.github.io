@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Argo Rollouts (2) - Blue/Green 배포 | Code Chronicle</title>
+<meta name="keywords" content="kubernetes, argo, argo-rollouts">
+<meta name="description" content="앞선 포스트에서 Argo Rollouts를 설치하고 간단한 예시를 통해 배포 전략이 적용되는 모습을 확인해보았습니다. .spec.strategy 필드를 통하여 간단한 배포 전략을 설정하고 실제 배포를 진행했는데요. Argo Rollouts는 필요에 따라 해당 필드를 다양하게 세팅하여 사용할 수 있습니다. 대표적인 방식으로 Blue/Green 배포 전략의 적용이 있습니다.
+Blue/Green 배포 1 apiVersion: argoproj.io/v1alpha1 kind: Rollout metadata: name: rollout-bluegreen spec: replicas: 5 revisionHistoryLimit: 1 selector: matchLabels: app: rollout-bluegreen template: metadata: labels: app: rollout-bluegreen spec: containers: - name: nginx image: nginx:1.">
+<meta name="author" content="Daram">
+<link rel="canonical" href="https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/">
+<meta name="google-site-verification" content="XLYYgF1H1ZwMGCrNvrmYOBbxz4bLroXX1K9MfINRy3M">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9e9dd26a8d2ed3e32c08a1b5c82a7ac786127e923c340d2444676c8c7f643c29.css" integrity="sha256-np3Sao0u0&#43;MsCKG1yCp6x4YSfpI8NA0kRGdsjH9kPCk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://code-chronicle.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://code-chronicle.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://code-chronicle.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://code-chronicle.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://code-chronicle.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+
+  
+
+<meta property="og:title" content="Argo Rollouts (2) - Blue/Green 배포" />
+<meta property="og:description" content="앞선 포스트에서 Argo Rollouts를 설치하고 간단한 예시를 통해 배포 전략이 적용되는 모습을 확인해보았습니다. .spec.strategy 필드를 통하여 간단한 배포 전략을 설정하고 실제 배포를 진행했는데요. Argo Rollouts는 필요에 따라 해당 필드를 다양하게 세팅하여 사용할 수 있습니다. 대표적인 방식으로 Blue/Green 배포 전략의 적용이 있습니다.
+Blue/Green 배포 1 apiVersion: argoproj.io/v1alpha1 kind: Rollout metadata: name: rollout-bluegreen spec: replicas: 5 revisionHistoryLimit: 1 selector: matchLabels: app: rollout-bluegreen template: metadata: labels: app: rollout-bluegreen spec: containers: - name: nginx image: nginx:1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/" /><meta property="article:section" content="kubernetes" />
+<meta property="article:published_time" content="2024-07-21T21:03:24+09:00" />
+<meta property="article:modified_time" content="2024-07-21T21:03:24+09:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Argo Rollouts (2) - Blue/Green 배포"/>
+<meta name="twitter:description" content="앞선 포스트에서 Argo Rollouts를 설치하고 간단한 예시를 통해 배포 전략이 적용되는 모습을 확인해보았습니다. .spec.strategy 필드를 통하여 간단한 배포 전략을 설정하고 실제 배포를 진행했는데요. Argo Rollouts는 필요에 따라 해당 필드를 다양하게 세팅하여 사용할 수 있습니다. 대표적인 방식으로 Blue/Green 배포 전략의 적용이 있습니다.
+Blue/Green 배포 1 apiVersion: argoproj.io/v1alpha1 kind: Rollout metadata: name: rollout-bluegreen spec: replicas: 5 revisionHistoryLimit: 1 selector: matchLabels: app: rollout-bluegreen template: metadata: labels: app: rollout-bluegreen spec: containers: - name: nginx image: nginx:1."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Kubernetes",
+      "item": "https://code-chronicle.github.io/kubernetes/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Argo Rollouts (2) - Blue/Green 배포",
+      "item": "https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Argo Rollouts (2) - Blue/Green 배포",
+  "name": "Argo Rollouts (2) - Blue\/Green 배포",
+  "description": "앞선 포스트에서 Argo Rollouts를 설치하고 간단한 예시를 통해 배포 전략이 적용되는 모습을 확인해보았습니다. .spec.strategy 필드를 통하여 간단한 배포 전략을 설정하고 실제 배포를 진행했는데요. Argo Rollouts는 필요에 따라 해당 필드를 다양하게 세팅하여 사용할 수 있습니다. 대표적인 방식으로 Blue/Green 배포 전략의 적용이 있습니다.\nBlue/Green 배포 1 apiVersion: argoproj.io/v1alpha1 kind: Rollout metadata: name: rollout-bluegreen spec: replicas: 5 revisionHistoryLimit: 1 selector: matchLabels: app: rollout-bluegreen template: metadata: labels: app: rollout-bluegreen spec: containers: - name: nginx image: nginx:1.",
+  "keywords": [
+    "kubernetes", "argo", "argo-rollouts"
+  ],
+  "articleBody": "앞선 포스트에서 Argo Rollouts를 설치하고 간단한 예시를 통해 배포 전략이 적용되는 모습을 확인해보았습니다. .spec.strategy 필드를 통하여 간단한 배포 전략을 설정하고 실제 배포를 진행했는데요. Argo Rollouts는 필요에 따라 해당 필드를 다양하게 세팅하여 사용할 수 있습니다. 대표적인 방식으로 Blue/Green 배포 전략의 적용이 있습니다.\nBlue/Green 배포 1 apiVersion: argoproj.io/v1alpha1 kind: Rollout metadata: name: rollout-bluegreen spec: replicas: 5 revisionHistoryLimit: 1 selector: matchLabels: app: rollout-bluegreen template: metadata: labels: app: rollout-bluegreen spec: containers: - name: nginx image: nginx:1.14.2 imagePullPolicy: Always ports: - name: http containerPort: 80 protocol: TCP strategy: blueGreen: activeService: rollout-bluegreen-active previewService: rollout-bluegreen-preview autoPromotionEnabled: false .spec.strategy.blueGreen 필드를 설정하여 Blue/Green 배포를 적용합니다. 간단하게 두개의 Service 리소스를 생성하고, 각각 activeService와 previewService로 지정한 뒤, 필요에 따라 autoPromotion을 세팅하면 기본 세팅이 완료됩니다.\nArgo Rollouts의 Blue/Green 배포는 세 상태를 거칩니다.\n0. 배포 이전 위 예시 yaml을 통해 Rollout 리소스를 생성하였습니다. 1개의 replicaSet에서 5개의 pod가 생성되어 있고, INFO 탭에 stable, active 로 표시된 것을 볼 수 있습니다. 배포가 이뤄지지 않은 기본 상태에서는, activeService와 previewService 양 서비스 모두가 같은 active replicaSet을 가리키고 있습니다.\n1. Preview 배포 이제 이전 포스트에서와 마찬가지로, nginx 버전을 변경하여 배포를 트리거해보겠습니다.\n$ kubectl argo rollouts set image rollout-demo nginx=nginx:1.15.12 revision 2에 새로운 replicaSet이 생성되었고, INFO 탭에 preview로 표시된 것을 확인할 수 있습니다. 이 상태에서 previewService는 새로운 replicaSet을 가리키고, activeService는 기존 replicaSet을 가리키던 것을 유지합니다. 즉, activeService를 통해 기존 replicaSet으로 향하는 트래픽을 유지하면서 previewService를 통해 신규 버전을 테스트할 수 있습니다.\n2. 배포 진행 spec.strategy.blueGreen.autoPromotionEnabled이 true일 경우, 신규 replicaSet의 모든 팟이 준비되어 desired replica 수에 도달하면 자동으로 배포가 진행됩니다. 그렇지 않을 경우, 이전 포스트와 마찬가지로 promote 명령어로 배포를 트리거해줍니다.\n$ kubectl argo rollouts promote rollout-demo 신규 replicaSet의 INFO가 stable, active로 변경되었습니다. 이제 activeService 역시 새로운 replicaSet을 가리키게 되어, 배포가 완료되었습니다.\n2.1. 배포 롤백 기존 replicaSet의 INFO 탭에는 delay 표시가 보이는데요, 이는 이전 replicaSet이 삭제되기까지의 시간을 나타냅니다. delay 시간동안 신규 replicaSet에 문제가 발견되면 빠르게 롤백할 수 있습니다. 다만 배포 프로세스는 종료되었기 때문에, kubectl argo rollouts abort rollout-bluegreen 커맨드는 사용할 수 없습니다. 대신 배포할 때와 동일한 명령어를 사용하여 이전 버전과 동일하게 스펙을 원상복구합니다.\n$ kubectl argo rollouts set image rollout-demo nginx=nginx:1.14.2 delay를 통해 pod이 아직 실행 중인 상태였을 경우, preview 과정 없이 기존 replicaSet이 stable, active 상태로 변합니다. 이때 revision은 증가한 것도 확인할 수 있습니다.\n3. 배포 완료 delay 시간이 지나고 나면 배포가 완전히 종료되어, 이전 replicaSet의 pod가 전부 종료됩니다. 이 이후에는 기존 버전으로 스펙을 원상복구하더라도 다시 preview를 거쳐 Blue/Green 배포가 진행됩니다.\nBlue/Green 배포의 원리 Deployment 리소스에 익숙한 사람의 경우, 배포 도중 두 replicaSet이 공존할 때, 어떻게 activeService와 previewService가 각각 다른 replicaSet을 가리키게 되는지 궁금할 수 있습니다. 사용자가 삽입하는 label은 app: rollout-bluegreen으로 동일하며, 이는 replicaSet의 selector에도 동일하게 적용되어 있기 때문입니다.\n실행중인 pod의 실제 매니페스트를 출력해보면 비밀을 알 수 있습니다.\n$ kubectl get pod/rollout-bluegreen-696ffb45c4-8wqw4 -o yaml apiVersion: v1 kind: Pod metadata: creationTimestamp: \"2024-09-01T16:50:22Z\" generateName: rollout-bluegreen-696ffb45c4- labels: app: rollout-bluegreen rollouts-pod-template-hash: 696ffb45c4 name: rollout-bluegreen-696ffb45c4-8wqw4 namespace: default ownerReferences: - apiVersion: apps/v1 blockOwnerDeletion: true controller: true kind: ReplicaSet name: rollout-bluegreen-696ffb45c4 uid: c6a60c77-8a53-4900-8fb9-f84693ad25da resourceVersion: \"1748666\" uid: 1f748908-4ce2-4a6c-9afa-77e054fccee3 spec: containers: - image: nginx:1.14.2 imagePullPolicy: Always name: nginx ports: - containerPort: 80 name: http protocol: TCP ... .metadata.labels를 살펴보면, rollout에서 spec.template.metadata.labels에 지정한 적 없는 rollouts-pod-template-hash: 696ffb45c4 라벨이 보입니다. 이어서 rollout-bluegreen-active 서비스의 매니페스트를 출력해보면,\napiVersion: v1 kind: Service metadata: annotations: argo-rollouts.argoproj.io/managed-by-rollouts: rollout-bluegreen kubectl.kubernetes.io/last-applied-configuration: | {\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"rollout-bluegreen-active\",\"namespace\":\"default\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\",\"targetPort\":80}],\"selector\":{\"app\":\"rollout-bluegreen\"},\"type\":\"ClusterIP\"}} creationTimestamp: \"2024-09-01T16:50:22Z\" name: rollout-bluegreen-active namespace: default resourceVersion: \"1749008\" uid: 8b592844-c962-4514-a891-cc49bf2a4052 spec: clusterIP: 10.96.90.132 clusterIPs: - 10.96.90.132 internalTrafficPolicy: Cluster ipFamilies: - IPv4 ipFamilyPolicy: SingleStack ports: - name: http port: 80 protocol: TCP targetPort: 80 selector: app: rollout-bluegreen rollouts-pod-template-hash: 696ffb45c4 sessionAffinity: None type: ClusterIP status: loadBalancer: {} 역시 .spec.selector 필드 하위로 동일한 rollouts-pod-template-hash: 696ffb45c4 라벨이 추가되어 있습니다. 이는 Argo Rollouts Controller가 자동으로 추가하는 라벨입니다. 각 Pod에 replicaSet의 고유 해시값을 라벨로 삽입하고, 배포 과정에서 service의 selector를 적절하게 자동으로 세팅하여 위와 같은 Blue/Green 배포를 가능하게 합니다.\n결론 이렇게 Argo Rollouts를 이용한 Blue/Green 배포 전략을 살펴보았습니다. 직접 구현하기 위해서는 어느정도 이해도가 필요한 Blue/Green 배포를, active/preview 서비스 타겟 지정만으로 간단하게 설정해 배포하고 롤백할 수 있었습니다. 서비스 환경에서는, 실제 유저 트래픽을 activeService를 통해 전달하고, 배포 과정에서 previewService를 통해 테스트함으로써 배포의 안정성을 확보합니다. scaleDownDelaySeconds 등 필요에 따라 몇가지의 configuration이 가능한데, 이는 Argo Rollouts 문서2를 참조하시길 바랍니다.\nArgo Rollouts를 통한 Blue/Green 배포는 간편하게 적용하기는 좋으나, previewService를 활용할수록 약간의 아쉬움이 생깁니다. 트래픽을 전환하기 전에 미리 테스트를 진행할 수 있는 것은 좋으나, 테스트만을 위해 preview replicaSet이 active replicaSet과 동일한 갯수의 pod을 실행시키고 있어야 하기 때문입니다. 이는 테스트가 길어질수록 리소스 비용이 증가하여 비효율을 야기합니다.\n이러한 여러 배포 니즈를 충족하기 위해 Argo Rollouts는 Canary 배포 전략을 다양하게 커스터마이징하도록 높은 자유도를 제공합니다. 다음 포스트에서는 이에 대해 알아보도록 하겠습니다.\nReferences BlueGreen 배포 전략 ↩︎\nBlueGreen configurable features ↩︎\n",
+  "wordCount" : "725",
+  "inLanguage": "en",
+  "datePublished": "2024-07-21T21:03:24+09:00",
+  "dateModified": "2024-07-21T21:03:24+09:00",
+  "author":[{
+    "@type": "Person",
+    "name": "Daram"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Code Chronicle",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://code-chronicle.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://code-chronicle.github.io/" accesskey="h" title="Code Chronicle (Alt + H)">Code Chronicle</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://code-chronicle.github.io/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://code-chronicle.github.io/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://code-chronicle.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://code-chronicle.github.io/kubernetes/">Kubernetes</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Argo Rollouts (2) - Blue/Green 배포
+    </h1>
+    <div class="post-meta"><span title='2024-07-21 21:03:24 +0900 KST'>July 21, 2024</span>&nbsp;·&nbsp;Daram
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#bluegreen-%eb%b0%b0%ed%8f%ac-argo-rollout-bluegreen-strategy" aria-label="Blue/Green 배포 1">Blue/Green 배포 1</a><ul>
+                        
+                <li>
+                    <a href="#0-%eb%b0%b0%ed%8f%ac-%ec%9d%b4%ec%a0%84" aria-label="0. 배포 이전">0. 배포 이전</a></li>
+                <li>
+                    <a href="#1-preview-%eb%b0%b0%ed%8f%ac" aria-label="1. Preview 배포">1. Preview 배포</a></li>
+                <li>
+                    <a href="#2-%eb%b0%b0%ed%8f%ac-%ec%a7%84%ed%96%89" aria-label="2. 배포 진행">2. 배포 진행</a></li>
+                <li>
+                    <a href="#21-%eb%b0%b0%ed%8f%ac-%eb%a1%a4%eb%b0%b1" aria-label="2.1. 배포 롤백">2.1. 배포 롤백</a></li>
+                <li>
+                    <a href="#3-%eb%b0%b0%ed%8f%ac-%ec%99%84%eb%a3%8c" aria-label="3. 배포 완료">3. 배포 완료</a></li></ul>
+                </li>
+                <li>
+                    <a href="#bluegreen-%eb%b0%b0%ed%8f%ac%ec%9d%98-%ec%9b%90%eb%a6%ac" aria-label="Blue/Green 배포의 원리">Blue/Green 배포의 원리</a></li>
+                <li>
+                    <a href="#%ea%b2%b0%eb%a1%a0" aria-label="결론">결론</a></li>
+                <li>
+                    <a href="#references" aria-label="References">References</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>앞선 포스트에서 Argo Rollouts를 설치하고 간단한 예시를 통해 배포 전략이 적용되는 모습을 확인해보았습니다.
+<code>.spec.strategy</code> 필드를 통하여 간단한 배포 전략을 설정하고 실제 배포를 진행했는데요.
+Argo Rollouts는 필요에 따라 해당 필드를 다양하게 세팅하여 사용할 수 있습니다. 대표적인 방식으로 Blue/Green 배포 전략의 적용이 있습니다.</p>
+<h2 id="bluegreen-배포-argo-rollout-bluegreen-strategy">Blue/Green 배포 <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup><a hidden class="anchor" aria-hidden="true" href="#bluegreen-배포-argo-rollout-bluegreen-strategy">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Rollout</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">rollout-bluegreen</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">revisionHistoryLimit</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">app</span>: <span style="color:#ae81ff">rollout-bluegreen</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">app</span>: <span style="color:#ae81ff">rollout-bluegreen</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx:1.14.2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">Always</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">http</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">strategy</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">blueGreen</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">activeService</span>: <span style="color:#ae81ff">rollout-bluegreen-active</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">previewService</span>: <span style="color:#ae81ff">rollout-bluegreen-preview</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">autoPromotionEnabled</span>: <span style="color:#66d9ef">false</span>
+</span></span></code></pre></div><p><code>.spec.strategy.blueGreen</code> 필드를 설정하여 Blue/Green 배포를 적용합니다.
+간단하게 두개의 Service 리소스를 생성하고, 각각 activeService와 previewService로 지정한 뒤, 필요에 따라 autoPromotion을 세팅하면 기본 세팅이 완료됩니다.</p>
+<p>Argo Rollouts의 Blue/Green 배포는 세 상태를 거칩니다.</p>
+<h3 id="0-배포-이전">0. 배포 이전<a hidden class="anchor" aria-hidden="true" href="#0-배포-이전">#</a></h3>
+<p><img loading="lazy" src="rollout-bluegreen-before.png" alt="rollout-bluegreen-before.png"  />
+</p>
+<p>위 예시 yaml을 통해 Rollout 리소스를 생성하였습니다. 1개의 replicaSet에서 5개의 pod가 생성되어 있고, INFO 탭에 <code>stable, active</code> 로 표시된 것을 볼 수 있습니다.
+배포가 이뤄지지 않은 기본 상태에서는, activeService와 previewService 양 서비스 모두가 같은 active replicaSet을 가리키고 있습니다.</p>
+<h3 id="1-preview-배포">1. Preview 배포<a hidden class="anchor" aria-hidden="true" href="#1-preview-배포">#</a></h3>
+<p>이제 이전 포스트에서와 마찬가지로, nginx 버전을 변경하여 배포를 트리거해보겠습니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl argo rollouts set image rollout-demo nginx<span style="color:#f92672">=</span>nginx:1.15.12
+</span></span></code></pre></div><p><img loading="lazy" src="rollout-bluegreen-progress.png" alt="rollout-bluegreen-progress.png"  />
+</p>
+<p>revision 2에 새로운 replicaSet이 생성되었고, INFO 탭에 <code>preview</code>로 표시된 것을 확인할 수 있습니다.
+이 상태에서 previewService는 새로운 replicaSet을 가리키고, activeService는 기존 replicaSet을 가리키던 것을 유지합니다.
+즉, activeService를 통해 기존 replicaSet으로 향하는 트래픽을 유지하면서 previewService를 통해 신규 버전을 테스트할 수 있습니다.</p>
+<h3 id="2-배포-진행">2. 배포 진행<a hidden class="anchor" aria-hidden="true" href="#2-배포-진행">#</a></h3>
+<p><code>spec.strategy.blueGreen.autoPromotionEnabled</code>이 <code>true</code>일 경우, 신규 replicaSet의 모든 팟이 준비되어 desired replica 수에 도달하면 자동으로 배포가 진행됩니다.
+그렇지 않을 경우, 이전 포스트와 마찬가지로 promote 명령어로 배포를 트리거해줍니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl argo rollouts promote rollout-demo
+</span></span></code></pre></div><p><img loading="lazy" src="rollout-bluegreen-promoted.png" alt="rollout-bluegreen-promoted.png"  />
+</p>
+<p>신규 replicaSet의 INFO가 <code>stable, active</code>로 변경되었습니다. 이제 activeService 역시 새로운 replicaSet을 가리키게 되어, 배포가 완료되었습니다.</p>
+<h3 id="21-배포-롤백">2.1. 배포 롤백<a hidden class="anchor" aria-hidden="true" href="#21-배포-롤백">#</a></h3>
+<p>기존 replicaSet의 INFO 탭에는 <code>delay</code> 표시가 보이는데요, 이는 이전 replicaSet이 삭제되기까지의 시간을 나타냅니다.
+delay 시간동안 신규 replicaSet에 문제가 발견되면 빠르게 롤백할 수 있습니다. 다만 배포 프로세스는 종료되었기 때문에, <code>kubectl argo rollouts abort rollout-bluegreen</code> 커맨드는 사용할 수 없습니다.
+대신 배포할 때와 동일한 명령어를 사용하여 이전 버전과 동일하게 스펙을 원상복구합니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl argo rollouts set image rollout-demo nginx<span style="color:#f92672">=</span>nginx:1.14.2
+</span></span></code></pre></div><p><img loading="lazy" src="rollout-bluegreen-rollback.png" alt="rollout-bluegreen-rollback.png"  />
+</p>
+<p>delay를 통해 pod이 아직 실행 중인 상태였을 경우, preview 과정 없이 기존 replicaSet이 <code>stable, active</code> 상태로 변합니다.
+이때 revision은 증가한 것도 확인할 수 있습니다.</p>
+<h3 id="3-배포-완료">3. 배포 완료<a hidden class="anchor" aria-hidden="true" href="#3-배포-완료">#</a></h3>
+<p><img loading="lazy" src="rollout-bluegreen-complete.png" alt="rollout-bluegreen-complete.png"  />
+
+delay 시간이 지나고 나면 배포가 완전히 종료되어, 이전 replicaSet의 pod가 전부 종료됩니다. 이 이후에는 기존 버전으로 스펙을 원상복구하더라도 다시 preview를 거쳐 Blue/Green 배포가 진행됩니다.</p>
+<h2 id="bluegreen-배포의-원리">Blue/Green 배포의 원리<a hidden class="anchor" aria-hidden="true" href="#bluegreen-배포의-원리">#</a></h2>
+<p>Deployment 리소스에 익숙한 사람의 경우, 배포 도중 두 replicaSet이 공존할 때, 어떻게 activeService와 previewService가 각각 다른 replicaSet을 가리키게 되는지 궁금할 수 있습니다.
+사용자가 삽입하는 label은 <code>app: rollout-bluegreen</code>으로 동일하며, 이는 replicaSet의 selector에도 동일하게 적용되어 있기 때문입니다.</p>
+<p>실행중인 pod의 실제 매니페스트를 출력해보면 비밀을 알 수 있습니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get pod/rollout-bluegreen-696ffb45c4-8wqw4 -o yaml
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">creationTimestamp</span>: <span style="color:#e6db74">&#34;2024-09-01T16:50:22Z&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">generateName</span>: <span style="color:#ae81ff">rollout-bluegreen-696ffb45c4-</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">rollout-bluegreen</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rollouts-pod-template-hash</span>: <span style="color:#ae81ff">696ffb45c4</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">rollout-bluegreen-696ffb45c4-8wqw4</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ownerReferences</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">blockOwnerDeletion</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">controller</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ReplicaSet</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">rollout-bluegreen-696ffb45c4</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">uid</span>: <span style="color:#ae81ff">c6a60c77-8a53-4900-8fb9-f84693ad25da</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">resourceVersion</span>: <span style="color:#e6db74">&#34;1748666&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">uid</span>: <span style="color:#ae81ff">1f748908-4ce2-4a6c-9afa-77e054fccee3</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx:1.14.2</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">Always</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">name</span>: <span style="color:#ae81ff">http</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p><code>.metadata.labels</code>를 살펴보면, rollout에서 <code>spec.template.metadata.labels</code>에 지정한 적 없는 <code>rollouts-pod-template-hash: 696ffb45c4</code> 라벨이 보입니다.
+이어서 <code>rollout-bluegreen-active</code> 서비스의 매니페스트를 출력해보면,</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">argo-rollouts.argoproj.io/managed-by-rollouts</span>: <span style="color:#ae81ff">rollout-bluegreen</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kubectl.kubernetes.io/last-applied-configuration</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      {&#34;apiVersion&#34;:&#34;v1&#34;,&#34;kind&#34;:&#34;Service&#34;,&#34;metadata&#34;:{&#34;annotations&#34;:{},&#34;name&#34;:&#34;rollout-bluegreen-active&#34;,&#34;namespace&#34;:&#34;default&#34;},&#34;spec&#34;:{&#34;ports&#34;:[{&#34;name&#34;:&#34;http&#34;,&#34;port&#34;:80,&#34;protocol&#34;:&#34;TCP&#34;,&#34;targetPort&#34;:80}],&#34;selector&#34;:{&#34;app&#34;:&#34;rollout-bluegreen&#34;},&#34;type&#34;:&#34;ClusterIP&#34;}}</span>      
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">creationTimestamp</span>: <span style="color:#e6db74">&#34;2024-09-01T16:50:22Z&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">rollout-bluegreen-active</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">resourceVersion</span>: <span style="color:#e6db74">&#34;1749008&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">uid</span>: <span style="color:#ae81ff">8b592844-c962-4514-a891-cc49bf2a4052</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">clusterIP</span>: <span style="color:#ae81ff">10.96.90.132</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">clusterIPs</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">10.96.90.132</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">internalTrafficPolicy</span>: <span style="color:#ae81ff">Cluster</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ipFamilies</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">IPv4</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ipFamilyPolicy</span>: <span style="color:#ae81ff">SingleStack</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">http</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">rollout-bluegreen</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rollouts-pod-template-hash</span>: <span style="color:#ae81ff">696ffb45c4</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">sessionAffinity</span>: <span style="color:#ae81ff">None</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">ClusterIP</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">status</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">loadBalancer</span>: {}
+</span></span></code></pre></div><p>역시 <code>.spec.selector</code> 필드 하위로 동일한 <code>rollouts-pod-template-hash: 696ffb45c4</code> 라벨이 추가되어 있습니다.
+이는 Argo Rollouts Controller가 자동으로 추가하는 라벨입니다. 각 Pod에 replicaSet의 고유 해시값을 라벨로 삽입하고, 배포 과정에서 service의 selector를 적절하게 자동으로 세팅하여 위와 같은 Blue/Green 배포를 가능하게 합니다.</p>
+<h2 id="결론">결론<a hidden class="anchor" aria-hidden="true" href="#결론">#</a></h2>
+<p>이렇게 Argo Rollouts를 이용한 Blue/Green 배포 전략을 살펴보았습니다.
+직접 구현하기 위해서는 어느정도 이해도가 필요한 Blue/Green 배포를, active/preview 서비스 타겟 지정만으로 간단하게 설정해 배포하고 롤백할 수 있었습니다.
+서비스 환경에서는, 실제 유저 트래픽을 activeService를 통해 전달하고, 배포 과정에서 previewService를 통해 테스트함으로써 배포의 안정성을 확보합니다.
+scaleDownDelaySeconds 등 필요에 따라 몇가지의 configuration이 가능한데, 이는 Argo Rollouts 문서<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>를 참조하시길 바랍니다.</p>
+<p>Argo Rollouts를 통한 Blue/Green 배포는 간편하게 적용하기는 좋으나, previewService를 활용할수록 약간의 아쉬움이 생깁니다.
+트래픽을 전환하기 전에 미리 테스트를 진행할 수 있는 것은 좋으나, 테스트만을 위해 preview replicaSet이 active replicaSet과 동일한 갯수의 pod을 실행시키고 있어야 하기 때문입니다.
+이는 테스트가 길어질수록 리소스 비용이 증가하여 비효율을 야기합니다.</p>
+<p>이러한 여러 배포 니즈를 충족하기 위해 Argo Rollouts는 Canary 배포 전략을 다양하게 커스터마이징하도록 높은 자유도를 제공합니다.
+다음 포스트에서는 이에 대해 알아보도록 하겠습니다.</p>
+<h2 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h2>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a href="https://argoproj.github.io/argo-rollouts/features/bluegreen/">BlueGreen 배포 전략</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://argoproj.github.io/argo-rollouts/features/bluegreen/#configurable-features">BlueGreen configurable features</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://code-chronicle.github.io/tags/kubernetes/">Kubernetes</a></li>
+      <li><a href="https://code-chronicle.github.io/tags/argo/">Argo</a></li>
+      <li><a href="https://code-chronicle.github.io/tags/argo-rollouts/">Argo-Rollouts</a></li>
+    </ul>
+  </footer><div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "code-chronicle-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2024 <a href="https://code-chronicle.github.io/">Code Chronicle</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -6,8 +6,16 @@
     <description>Recent content in Service on Code Chronicle</description>
     <generator>Hugo -- 0.127.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 25 Jul 2024 08:57:23 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 02 Sep 2024 09:39:15 +0900</lastBuildDate>
     <atom:link href="https://code-chronicle.github.io/tags/service/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kubernetes Service Type - ExternalName</title>
+      <link>https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/</link>
+      <pubDate>Mon, 02 Sep 2024 09:39:15 +0900</pubDate>
+      <guid>https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/</guid>
+      <description>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ExternalName에 대해 자세히 알아보겠습니다.
+ExternalName 이란? ExternalName 서비스는 Kubernetes 클러스터 외부의 서비스로 트래픽을 전달하는 특별한 서비스 유형입니다. 이 서비스는 Kubernetes 클러스터 외부의 도메인 이름(DNS)으로 트래픽을 라우팅하도록 구성됩니다. 즉, ExternalName 서비스는 외부 서비스에 대한 내부 DNS 엔트리를 생성하여 Kubernetes 클러스터 내의 애플리케이션이 외부 서비스를 쉽게 참조할 수 있게 해줍니다.</description>
+    </item>
     <item>
       <title>Kubernetes Service Type - Loadbalancer</title>
       <link>https://code-chronicle.github.io/kubernetes/kubernetes-service-loadbalancer/</link>
