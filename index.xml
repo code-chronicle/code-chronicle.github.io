@@ -6,8 +6,17 @@
     <description>Recent content on Code Chronicle</description>
     <generator>Hugo -- 0.127.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 02 Sep 2024 09:39:15 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 10 Sep 2024 17:24:25 +0900</lastBuildDate>
     <atom:link href="https://code-chronicle.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Create Kubernetes Service Accounts and Kubeconfigs</title>
+      <link>https://code-chronicle.github.io/kubernetes/kubeconfig-with-service-account/</link>
+      <pubDate>Tue, 10 Sep 2024 17:24:25 +0900</pubDate>
+      <guid>https://code-chronicle.github.io/kubernetes/kubeconfig-with-service-account/</guid>
+      <description>Kubernetes의 Service Account와 kubeconfig 파일을 사용하여, kubernetes 클러스터 외부에서 접근하는 방법을 알아보도록 하겠습니다.
+Service Account 생성 Kubernetes 1.24 부터 ServiceAccount 생성시 Secret을 자동으로 생성하지 않습니다.
+Kubernetes 1.24 이상 # 생성 $ kubectl create sa test-sa # 조회 $ kubectl get sa test-sa -o yaml apiVersion: v1 kind: ServiceAccount metadata: creationTimestamp: &amp;#34;2024-09-11T05:01:12Z&amp;#34; name: test-sa namespace: default resourceVersion: &amp;#34;6948234123&amp;#34; uid: 234d3212-a859-44f6-8bfd-sdfsd123123 Kubernetes 1.23 이하 Kubernetes 1.23 이하 버전 사용시 Secret을 생성하지 않아도 됩니다.</description>
+    </item>
     <item>
       <title>Kubernetes Service Type - ExternalName</title>
       <link>https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/</link>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Create Kubernetes Service Accounts and Kubeconfigs | Code Chronicle</title>
+<meta name="keywords" content="kubernetes, service-account, kubeconfig">
+<meta name="description" content="Kubernetes의 Service Account와 kubeconfig 파일을 사용하여, kubernetes 클러스터 외부에서 접근하는 방법을 알아보도록 하겠습니다.
+Service Account 생성 Kubernetes 1.24 부터 ServiceAccount 생성시 Secret을 자동으로 생성하지 않습니다.
+Kubernetes 1.24 이상 # 생성 $ kubectl create sa test-sa # 조회 $ kubectl get sa test-sa -o yaml apiVersion: v1 kind: ServiceAccount metadata: creationTimestamp: &#34;2024-09-11T05:01:12Z&#34; name: test-sa namespace: default resourceVersion: &#34;6948234123&#34; uid: 234d3212-a859-44f6-8bfd-sdfsd123123 Kubernetes 1.23 이하 Kubernetes 1.23 이하 버전 사용시 Secret을 생성하지 않아도 됩니다.">
+<meta name="author" content="Kai">
+<link rel="canonical" href="https://code-chronicle.github.io/kubernetes/kubeconfig-with-service-account/">
+<meta name="google-site-verification" content="XLYYgF1H1ZwMGCrNvrmYOBbxz4bLroXX1K9MfINRy3M">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9e9dd26a8d2ed3e32c08a1b5c82a7ac786127e923c340d2444676c8c7f643c29.css" integrity="sha256-np3Sao0u0&#43;MsCKG1yCp6x4YSfpI8NA0kRGdsjH9kPCk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://code-chronicle.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://code-chronicle.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://code-chronicle.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://code-chronicle.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://code-chronicle.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://code-chronicle.github.io/kubernetes/kubeconfig-with-service-account/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+
+  
+
+<meta property="og:title" content="Create Kubernetes Service Accounts and Kubeconfigs" />
+<meta property="og:description" content="Kubernetes의 Service Account와 kubeconfig 파일을 사용하여, kubernetes 클러스터 외부에서 접근하는 방법을 알아보도록 하겠습니다.
+Service Account 생성 Kubernetes 1.24 부터 ServiceAccount 생성시 Secret을 자동으로 생성하지 않습니다.
+Kubernetes 1.24 이상 # 생성 $ kubectl create sa test-sa # 조회 $ kubectl get sa test-sa -o yaml apiVersion: v1 kind: ServiceAccount metadata: creationTimestamp: &#34;2024-09-11T05:01:12Z&#34; name: test-sa namespace: default resourceVersion: &#34;6948234123&#34; uid: 234d3212-a859-44f6-8bfd-sdfsd123123 Kubernetes 1.23 이하 Kubernetes 1.23 이하 버전 사용시 Secret을 생성하지 않아도 됩니다." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://code-chronicle.github.io/kubernetes/kubeconfig-with-service-account/" /><meta property="article:section" content="kubernetes" />
+<meta property="article:published_time" content="2024-09-10T17:24:25+09:00" />
+<meta property="article:modified_time" content="2024-09-10T17:24:25+09:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Create Kubernetes Service Accounts and Kubeconfigs"/>
+<meta name="twitter:description" content="Kubernetes의 Service Account와 kubeconfig 파일을 사용하여, kubernetes 클러스터 외부에서 접근하는 방법을 알아보도록 하겠습니다.
+Service Account 생성 Kubernetes 1.24 부터 ServiceAccount 생성시 Secret을 자동으로 생성하지 않습니다.
+Kubernetes 1.24 이상 # 생성 $ kubectl create sa test-sa # 조회 $ kubectl get sa test-sa -o yaml apiVersion: v1 kind: ServiceAccount metadata: creationTimestamp: &#34;2024-09-11T05:01:12Z&#34; name: test-sa namespace: default resourceVersion: &#34;6948234123&#34; uid: 234d3212-a859-44f6-8bfd-sdfsd123123 Kubernetes 1.23 이하 Kubernetes 1.23 이하 버전 사용시 Secret을 생성하지 않아도 됩니다."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Kubernetes",
+      "item": "https://code-chronicle.github.io/kubernetes/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Create Kubernetes Service Accounts and Kubeconfigs",
+      "item": "https://code-chronicle.github.io/kubernetes/kubeconfig-with-service-account/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Create Kubernetes Service Accounts and Kubeconfigs",
+  "name": "Create Kubernetes Service Accounts and Kubeconfigs",
+  "description": "Kubernetes의 Service Account와 kubeconfig 파일을 사용하여, kubernetes 클러스터 외부에서 접근하는 방법을 알아보도록 하겠습니다.\nService Account 생성 Kubernetes 1.24 부터 ServiceAccount 생성시 Secret을 자동으로 생성하지 않습니다.\nKubernetes 1.24 이상 # 생성 $ kubectl create sa test-sa # 조회 $ kubectl get sa test-sa -o yaml apiVersion: v1 kind: ServiceAccount metadata: creationTimestamp: \u0026#34;2024-09-11T05:01:12Z\u0026#34; name: test-sa namespace: default resourceVersion: \u0026#34;6948234123\u0026#34; uid: 234d3212-a859-44f6-8bfd-sdfsd123123 Kubernetes 1.23 이하 Kubernetes 1.23 이하 버전 사용시 Secret을 생성하지 않아도 됩니다.",
+  "keywords": [
+    "kubernetes", "service-account", "kubeconfig"
+  ],
+  "articleBody": "Kubernetes의 Service Account와 kubeconfig 파일을 사용하여, kubernetes 클러스터 외부에서 접근하는 방법을 알아보도록 하겠습니다.\nService Account 생성 Kubernetes 1.24 부터 ServiceAccount 생성시 Secret을 자동으로 생성하지 않습니다.\nKubernetes 1.24 이상 # 생성 $ kubectl create sa test-sa # 조회 $ kubectl get sa test-sa -o yaml apiVersion: v1 kind: ServiceAccount metadata: creationTimestamp: \"2024-09-11T05:01:12Z\" name: test-sa namespace: default resourceVersion: \"6948234123\" uid: 234d3212-a859-44f6-8bfd-sdfsd123123 Kubernetes 1.23 이하 Kubernetes 1.23 이하 버전 사용시 Secret을 생성하지 않아도 됩니다. ServiceAccount 생성시 자동 생성됩니다.\n# 생성 $ kubectl create sa test-sa # 조회 $ kubectl get sa test-sa -o yaml apiVersion: v1 kind: ServiceAccount metadata: creationTimestamp: \"2024-09-11T05:01:12Z\" name: test-sa namespace: default resourceVersion: \"6948234123\" uid: 234d3212-a859-44f6-8bfd-sdfsd123123 # secret이 생성되어 ServiceAccount에 secret이름이 연결되어있습니다. secrets: - name: test-sa-token-nsrc8 Secret 생성 Kubernetes 1.24 부터 Secret을 생성해야 합니다. Secret 생성시 kubernetes.io/service-account.name annotation으로 생성한 ServiceAccount name을 설정해야 합니다.\napiVersion: v1 kind: Secret type: kubernetes.io/service-account-token metadata: name: test-sa-token annotations: # ServiceAccount name kubernetes.io/service-account.name: \"test-sa\" RBAC 권한 설정 Kubernetes의 리소스에 접근하기 위해서 권한설정을 해주셔야합니다. 아래의 예제는 Kubernetes에서 기본으로 제공되는 cluster-admin(ClusterRole) 권한을 설정하였습니다. 예제 작성을 위해 cluster-admin 권한을 설정하였지만, 최소권한으로 설정하셔야 합니다. Role / RoleBinding을 사용하여 특정 namespace의 권한을 설정하거나, ClusterRole / ClusterRoleBinding cluster 레벨로 권한을 설정할 수 있습니다.\napiVersion: rbac.authorization.k8s.io/v1 kind: ClusterRoleBinding metadata: name: test-sa-clusterrolebinding roleRef: kind: ClusterRole name: cluster-admin apiGroup: rbac.authorization.k8s.io subjects: - kind: ServiceAccount name: test-sa namespace: default Kubeconfig 파일 생성 아래의 스크립트를 저장 후 실행하여 Kubeconfig 파일을 작성합니다.\n#!/bin/bash API_SERVER_URL=$1 NAMESPACE=$2 SERVICEACCOUNT=$3 SECRETNAME=$4 if [ -z \"${API_SERVER_URL}\" ]; then echo \"requried API_SERVER_URL\" echo \"usage: make_kubeconfig.sh API_SERVER_URL NAMESPACE SERVICEACCOUNT\" exit 1 fi if [ -z \"${NAMESPACE}\" ]; then echo \"requried NAMESPACE\" echo \"usage: make_kubeconfig.sh API_SERVER_URL NAMESPACE SERVICEACCOUNT\" exit 1 fi if [ -z \"${SERVICEACCOUNT}\" ]; then echo \"requried SERVICEACCOUNT\" echo \"usage: make_kubeconfig.sh API_SERVER_URL NAMESPACE SERVICEACCOUNT\" exit 1 fi if [ -z \"${SECRETNAME}\" ]; then echo \"requried SECRETNAME\" echo \"usage: make_kubeconfig.sh API_SERVER_URL NAMESPACE SERVICEACCOUNT SECRETNAME\" exit 1 fi CA=$(kubectl -n $NAMESPACE get secret $SECRETNAME -o jsonpath='{.data.ca\\.crt}') TOKEN=$(kubectl -n $NAMESPACE get secret $SECRETNAME -o jsonpath='{.data.token}' | base64 --decode) echo \"apiVersion: v1 kind: Config clusters: - name: default-cluster cluster: certificate-authority-data: ${CA} server: ${API_SERVER_URL} contexts: - name: default-context context: cluster: default-cluster namespace: ${NAMESPACE} user: ${SERVICEACCOUNT} current-context: default-context users: - name: ${SERVICEACCOUNT} user: token: ${TOKEN} \" API Server Endpoint kubectl 명령어를 사용하면 확인할 수 있습니다.\n$ kubectl cluster-info Kubernetes control plane is running at https://324JN324JKHNB32KJ4NB32KJ432KJ4N2.nn1.ap-northeast-2.eks.amazonaws.com 스크립트 실행 위의 파일을 /tmp/kubeconfig.sh 파일로 저장하여 실행하는 예제입니다.\n/tmp/kubeconfig.sh https://324JN324JKHNB32KJ4NB32KJ432KJ4N2.nn1.ap-northeast-2.eks.amazonaws.com default test-sa test-sa-token \u003e /tmp/kubeconfig.yaml kubectl 생성된 Kubeconfig 파일을 사용하여 kubectl 명령어를 사용할 수 있습니다. 예제에서는 RBAC 권한이 cluster-admin으로 설정되어있어서 모든 namespace의 POD를 조회할 수 있습니다. RBAC 권한에 따라 namespace 또는 리소스 접근에 제한이 걸릴 수 있습니다.\n$ kubectl --kubeconfig=/tmp/kubeconfig.yaml get pod --all-namespaces ",
+  "wordCount" : "429",
+  "inLanguage": "en",
+  "datePublished": "2024-09-10T17:24:25+09:00",
+  "dateModified": "2024-09-10T17:24:25+09:00",
+  "author":[{
+    "@type": "Person",
+    "name": "Kai"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://code-chronicle.github.io/kubernetes/kubeconfig-with-service-account/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Code Chronicle",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://code-chronicle.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://code-chronicle.github.io/" accesskey="h" title="Code Chronicle (Alt + H)">Code Chronicle</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://code-chronicle.github.io/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://code-chronicle.github.io/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://code-chronicle.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://code-chronicle.github.io/kubernetes/">Kubernetes</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Create Kubernetes Service Accounts and Kubeconfigs
+    </h1>
+    <div class="post-meta"><span title='2024-09-10 17:24:25 +0900 KST'>September 10, 2024</span>&nbsp;·&nbsp;Kai
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#service-account-%ec%83%9d%ec%84%b1" aria-label="Service Account 생성">Service Account 생성</a><ul>
+                        
+                <li>
+                    <a href="#kubernetes-124-%ec%9d%b4%ec%83%81" aria-label="Kubernetes 1.24 이상">Kubernetes 1.24 이상</a></li>
+                <li>
+                    <a href="#kubernetes-123-%ec%9d%b4%ed%95%98" aria-label="Kubernetes 1.23 이하">Kubernetes 1.23 이하</a></li></ul>
+                </li>
+                <li>
+                    <a href="#secret-%ec%83%9d%ec%84%b1" aria-label="Secret 생성">Secret 생성</a></li>
+                <li>
+                    <a href="#rbac-%ea%b6%8c%ed%95%9c-%ec%84%a4%ec%a0%95" aria-label="RBAC 권한 설정">RBAC 권한 설정</a></li>
+                <li>
+                    <a href="#kubeconfig-%ed%8c%8c%ec%9d%bc-%ec%83%9d%ec%84%b1" aria-label="Kubeconfig 파일 생성">Kubeconfig 파일 생성</a><ul>
+                        
+                <li>
+                    <a href="#api-server-endpoint" aria-label="API Server Endpoint">API Server Endpoint</a></li>
+                <li>
+                    <a href="#%ec%8a%a4%ed%81%ac%eb%a6%bd%ed%8a%b8-%ec%8b%a4%ed%96%89" aria-label="스크립트 실행">스크립트 실행</a></li>
+                <li>
+                    <a href="#kubectl" aria-label="kubectl">kubectl</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Kubernetes의 Service Account와 kubeconfig 파일을 사용하여, kubernetes 클러스터 외부에서 접근하는 방법을 알아보도록 하겠습니다.</p>
+<h2 id="service-account-생성">Service Account 생성<a hidden class="anchor" aria-hidden="true" href="#service-account-생성">#</a></h2>
+<p>Kubernetes 1.24 부터 ServiceAccount 생성시 Secret을 자동으로 생성하지 않습니다.</p>
+<h3 id="kubernetes-124-이상">Kubernetes 1.24 이상<a hidden class="anchor" aria-hidden="true" href="#kubernetes-124-이상">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 생성</span>
+</span></span><span style="display:flex;"><span>$ kubectl create sa test-sa
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 조회</span>
+</span></span><span style="display:flex;"><span>$ kubectl get sa test-sa -o yaml
+</span></span><span style="display:flex;"><span>apiVersion: v1
+</span></span><span style="display:flex;"><span>kind: ServiceAccount
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  creationTimestamp: <span style="color:#e6db74">&#34;2024-09-11T05:01:12Z&#34;</span>
+</span></span><span style="display:flex;"><span>  name: test-sa
+</span></span><span style="display:flex;"><span>  namespace: default
+</span></span><span style="display:flex;"><span>  resourceVersion: <span style="color:#e6db74">&#34;6948234123&#34;</span>
+</span></span><span style="display:flex;"><span>  uid: 234d3212-a859-44f6-8bfd-sdfsd123123
+</span></span></code></pre></div><h3 id="kubernetes-123-이하">Kubernetes 1.23 이하<a hidden class="anchor" aria-hidden="true" href="#kubernetes-123-이하">#</a></h3>
+<p>Kubernetes 1.23 이하 버전 사용시 Secret을 생성하지 않아도 됩니다. ServiceAccount 생성시 자동 생성됩니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 생성</span>
+</span></span><span style="display:flex;"><span>$ kubectl create sa test-sa
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 조회</span>
+</span></span><span style="display:flex;"><span>$ kubectl get sa test-sa -o yaml
+</span></span><span style="display:flex;"><span>apiVersion: v1
+</span></span><span style="display:flex;"><span>kind: ServiceAccount
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  creationTimestamp: <span style="color:#e6db74">&#34;2024-09-11T05:01:12Z&#34;</span>
+</span></span><span style="display:flex;"><span>  name: test-sa
+</span></span><span style="display:flex;"><span>  namespace: default
+</span></span><span style="display:flex;"><span>  resourceVersion: <span style="color:#e6db74">&#34;6948234123&#34;</span>
+</span></span><span style="display:flex;"><span>  uid: 234d3212-a859-44f6-8bfd-sdfsd123123
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># secret이 생성되어 ServiceAccount에 secret이름이 연결되어있습니다.</span>
+</span></span><span style="display:flex;"><span>secrets:
+</span></span><span style="display:flex;"><span>- name: test-sa-token-nsrc8
+</span></span></code></pre></div><h2 id="secret-생성">Secret 생성<a hidden class="anchor" aria-hidden="true" href="#secret-생성">#</a></h2>
+<p>Kubernetes 1.24 부터 Secret을 생성해야 합니다. Secret 생성시 <code>kubernetes.io/service-account.name</code> annotation으로 생성한 ServiceAccount name을 설정해야 합니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Secret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">type</span>: <span style="color:#ae81ff">kubernetes.io/service-account-token</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">test-sa-token</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ServiceAccount name</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kubernetes.io/service-account.name</span>: <span style="color:#e6db74">&#34;test-sa&#34;</span>
+</span></span></code></pre></div><h2 id="rbac-권한-설정">RBAC 권한 설정<a hidden class="anchor" aria-hidden="true" href="#rbac-권한-설정">#</a></h2>
+<p>Kubernetes의 리소스에 접근하기 위해서 권한설정을 해주셔야합니다. 아래의 예제는 Kubernetes에서 기본으로 제공되는 <code>cluster-admin</code>(ClusterRole) 권한을 설정하였습니다. 예제 작성을 위해 cluster-admin 권한을 설정하였지만, 최소권한으로 설정하셔야 합니다. <code>Role</code> / <code>RoleBinding</code>을 사용하여 특정 namespace의 권한을 설정하거나,  <code>ClusterRole</code> / <code>ClusterRoleBinding</code> cluster 레벨로 권한을 설정할 수 있습니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterRoleBinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">test-sa-clusterrolebinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roleRef</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterRole</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">cluster-admin</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">subjects</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ServiceAccount</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">test-sa</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span></code></pre></div><h2 id="kubeconfig-파일-생성">Kubeconfig 파일 생성<a hidden class="anchor" aria-hidden="true" href="#kubeconfig-파일-생성">#</a></h2>
+<p>아래의 스크립트를 저장 후 실행하여 Kubeconfig 파일을 작성합니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>API_SERVER_URL<span style="color:#f92672">=</span>$1
+</span></span><span style="display:flex;"><span>NAMESPACE<span style="color:#f92672">=</span>$2
+</span></span><span style="display:flex;"><span>SERVICEACCOUNT<span style="color:#f92672">=</span>$3
+</span></span><span style="display:flex;"><span>SECRETNAME<span style="color:#f92672">=</span>$4
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_SERVER_URL<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;requried API_SERVER_URL&#34;</span>
+</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;usage: make_kubeconfig.sh API_SERVER_URL NAMESPACE SERVICEACCOUNT&#34;</span>
+</span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>NAMESPACE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;requried NAMESPACE&#34;</span>
+</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;usage: make_kubeconfig.sh API_SERVER_URL NAMESPACE SERVICEACCOUNT&#34;</span>
+</span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SERVICEACCOUNT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;requried SERVICEACCOUNT&#34;</span>
+</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;usage: make_kubeconfig.sh API_SERVER_URL NAMESPACE SERVICEACCOUNT&#34;</span>
+</span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SECRETNAME<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;requried SECRETNAME&#34;</span>
+</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;usage: make_kubeconfig.sh API_SERVER_URL NAMESPACE SERVICEACCOUNT SECRETNAME&#34;</span>
+</span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>CA<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl -n $NAMESPACE get secret $SECRETNAME -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.data.ca\.crt}&#39;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>TOKEN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl -n $NAMESPACE get secret $SECRETNAME -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.data.token}&#39;</span> | base64 --decode<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;apiVersion: v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: Config
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">clusters:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: default-cluster
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  cluster:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    certificate-authority-data: </span><span style="color:#e6db74">${</span>CA<span style="color:#e6db74">}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    server: </span><span style="color:#e6db74">${</span>API_SERVER_URL<span style="color:#e6db74">}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">contexts:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: default-context
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  context:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    cluster: default-cluster
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    namespace: </span><span style="color:#e6db74">${</span>NAMESPACE<span style="color:#e6db74">}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    user: </span><span style="color:#e6db74">${</span>SERVICEACCOUNT<span style="color:#e6db74">}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">current-context: default-context
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">users:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: </span><span style="color:#e6db74">${</span>SERVICEACCOUNT<span style="color:#e6db74">}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  user:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    token: </span><span style="color:#e6db74">${</span>TOKEN<span style="color:#e6db74">}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;</span>
+</span></span></code></pre></div><h3 id="api-server-endpoint">API Server Endpoint<a hidden class="anchor" aria-hidden="true" href="#api-server-endpoint">#</a></h3>
+<p>kubectl 명령어를 사용하면 확인할 수 있습니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ kubectl cluster-info
+</span></span><span style="display:flex;"><span>Kubernetes control plane is running at https://324JN324JKHNB32KJ4NB32KJ432KJ4N2.nn1.ap-northeast-2.eks.amazonaws.com
+</span></span></code></pre></div><h3 id="스크립트-실행">스크립트 실행<a hidden class="anchor" aria-hidden="true" href="#스크립트-실행">#</a></h3>
+<p>위의 파일을 <code>/tmp/kubeconfig.sh</code> 파일로 저장하여 실행하는 예제입니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>/tmp/kubeconfig.sh https://324JN324JKHNB32KJ4NB32KJ432KJ4N2.nn1.ap-northeast-2.eks.amazonaws.com default test-sa test-sa-token &gt; /tmp/kubeconfig.yaml
+</span></span></code></pre></div><h3 id="kubectl">kubectl<a hidden class="anchor" aria-hidden="true" href="#kubectl">#</a></h3>
+<p>생성된 Kubeconfig 파일을 사용하여 <code>kubectl</code> 명령어를 사용할 수 있습니다. 예제에서는 RBAC 권한이 <code>cluster-admin</code>으로 설정되어있어서 모든 namespace의 POD를 조회할 수 있습니다. RBAC 권한에 따라 namespace 또는 리소스 접근에 제한이 걸릴 수 있습니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ kubectl --kubeconfig<span style="color:#f92672">=</span>/tmp/kubeconfig.yaml get pod --all-namespaces
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://code-chronicle.github.io/tags/kubernetes/">Kubernetes</a></li>
+      <li><a href="https://code-chronicle.github.io/tags/service-account/">Service-Account</a></li>
+      <li><a href="https://code-chronicle.github.io/tags/kubeconfig/">Kubeconfig</a></li>
+    </ul>
+  </footer><div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "code-chronicle-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2024 <a href="https://code-chronicle.github.io/">Code Chronicle</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
