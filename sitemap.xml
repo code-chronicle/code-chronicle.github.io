@@ -3,12 +3,42 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://code-chronicle.github.io/categories/</loc>
-    <lastmod>2024-09-10T17:24:25+09:00</lastmod>
+    <lastmod>2024-09-21T15:12:49+09:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://code-chronicle.github.io/</loc>
-    <lastmod>2024-09-10T17:24:25+09:00</lastmod>
+    <lastmod>2024-09-21T15:12:49+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/tags/container/</loc>
+    <lastmod>2024-09-21T15:12:49+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/tags/kubernetes/</loc>
+    <lastmod>2024-09-21T15:12:49+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/kubernetes/</loc>
+    <lastmod>2024-09-21T15:12:49+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/categories/kubernetes/</loc>
+    <lastmod>2024-09-21T15:12:49+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/kubernetes/kubernetes-container-env/</loc>
+    <lastmod>2024-09-21T15:12:49+09:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://code-chronicle.github.io/tags/</loc>
+    <lastmod>2024-09-21T15:12:49+09:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
@@ -22,27 +52,7 @@
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://code-chronicle.github.io/tags/kubernetes/</loc>
-    <lastmod>2024-09-10T17:24:25+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://code-chronicle.github.io/kubernetes/</loc>
-    <lastmod>2024-09-10T17:24:25+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://code-chronicle.github.io/categories/kubernetes/</loc>
-    <lastmod>2024-09-10T17:24:25+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
     <loc>https://code-chronicle.github.io/tags/service-account/</loc>
-    <lastmod>2024-09-10T17:24:25+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://code-chronicle.github.io/tags/</loc>
     <lastmod>2024-09-10T17:24:25+09:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
@@ -73,11 +83,6 @@
     <priority>0.5</priority>
   </url><url>
     <loc>https://code-chronicle.github.io/aws/aws-ecr-multi-architecture-images/</loc>
-    <lastmod>2024-08-16T08:43:51+09:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://code-chronicle.github.io/tags/container/</loc>
     <lastmod>2024-08-16T08:43:51+09:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>

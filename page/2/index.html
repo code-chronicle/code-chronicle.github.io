@@ -146,6 +146,19 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Argo Rollouts (2) - Blue/Green 배포
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>앞선 포스트에서 Argo Rollouts를 설치하고 간단한 예시를 통해 배포 전략이 적용되는 모습을 확인해보았습니다. .spec.strategy 필드를 통하여 간단한 배포 전략을 설정하고 실제 배포를 진행했는데요. Argo Rollouts는 필요에 따라 해당 필드를 다양하게 세팅하여 사용할 수 있습니다. 대표적인 방식으로 Blue/Green 배포 전략의 적용이 있습니다.
+Blue/Green 배포 1 apiVersion: argoproj.io/v1alpha1 kind: Rollout metadata: name: rollout-bluegreen spec: replicas: 5 revisionHistoryLimit: 1 selector: matchLabels: app: rollout-bluegreen template: metadata: labels: app: rollout-bluegreen spec: containers: - name: nginx image: nginx:1....</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-07-21 21:03:24 +0900 KST'>July 21, 2024</span>&nbsp;·&nbsp;Daram</footer>
+  <a class="entry-link" aria-label="post link to Argo Rollouts (2) - Blue/Green 배포" href="https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Kubernetes Service Type - NodePort
     </h2>
   </header>

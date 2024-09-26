@@ -152,6 +152,21 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Kubernetes 컨테이너 환경변수 주입 방식과 우선순위
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Kubernetes 상에서 소스코드를 구동할 때, 코드베이스를 변경하지 않으면서 코드의 동작을 컨트롤하기 위한 방법으로 환경변수가 흔히 이용됩니다.
+Kubernetes 컨테이너에 환경변수를 주입하는 다양한 방식과, 여러 방식을 동시에 이용하여 충돌이 발생했을 때의 우선순위에 관헤 알아보겠습니다.
+key-value 직접 명시 가장 직관적인 방식으로, container spec 내부에 직접 key-value로 환경변수를 명시하는 방식입니다.
+apiVersion: v1 kind: Pod metadata: name: pod-with-env spec: containers: - name: container-with-env image: nginx:1.14.2 env: - name: SOME_ENV_KEY value: &#34;some env value&#34; - name: SOME_ENV_KEY_2 value: &#34;another env value&#34; 외부 리소스로부터 값 로드 직접 value를 명시하지 않고, 외부 리소스로부터 환경변수를 주입할 수도 있습니다....</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-21 15:12:49 +0900 KST'>September 21, 2024</span>&nbsp;·&nbsp;Daram</footer>
+  <a class="entry-link" aria-label="post link to Kubernetes 컨테이너 환경변수 주입 방식과 우선순위" href="https://code-chronicle.github.io/kubernetes/kubernetes-container-env/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Create Kubernetes Service Accounts and Kubeconfigs
     </h2>
   </header>
@@ -201,20 +216,6 @@ Blue/Green 배포 1 apiVersion: argoproj.io/v1alpha1 kind: Rollout metadata: nam
   </div>
   <footer class="entry-footer"><span title='2024-07-21 21:03:24 +0900 KST'>July 21, 2024</span>&nbsp;·&nbsp;Daram</footer>
   <a class="entry-link" aria-label="post link to Argo Rollouts (2) - Blue/Green 배포" href="https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Kubernetes Service Type - NodePort
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 NodePort에 대해 자세히 알아보겠습니다.
-NodePort란? NodePort는 클러스터 외부에서 Kubernetes 클러스터 내부로 트래픽을 전달할 수 있는 가장 간단한 방법 중 하나입니다. NodePort는 클러스터의 각 노드에서 고정된 포트를 열어, 이 포트를 통해 외부 트래픽을 특정 POD로 라우팅합니다.
-주요 특징 NodePort는 Kubernetes 클러스터 내 노드의 특정 포트(30000-32767)를 열어 트래픽을 수신합니다....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-16 18:56:08 +0900 KST'>July 16, 2024</span>&nbsp;·&nbsp;Kai</footer>
-  <a class="entry-link" aria-label="post link to Kubernetes Service Type - NodePort" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-nodeport/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
