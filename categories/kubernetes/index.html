@@ -137,6 +137,20 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Kubernetes DNS 구성 최적화
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Kubernetes에서 DNS 구성은 단순한 네트워크 설정을 넘어 애플리케이션의 운영 효율성과 확장성에 중요한 역할을 합니다. 효율적인 DNS 해석은 빠르고 신뢰할 수 있는 서비스 검색을 제공하여 애플리케이션의 성능과 안정성을 향상시킬 수 있습니다.
+NodeLocal DNSCache Kubernetes 클러스터에서는 모든 DNS 질의를 CoreDNS가 처리합니다. 이로 인해 CoreDNS에 부하가 발생할 수 있으며, 부하가 커지면 DNS 질의 실패로 서비스 장애가 발생할 수 있습니다. NodeLocal DNSCache 데몬셋을 설치하면 DNS 성능을 향상시키고 CoreDNS의 부하를 줄일 수 있습니다.
+Install nodelocaldns configuration 문서를 보고 설치하시거나, helm 명령어를 사용하여 설치할 수 있습니다....</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-26 09:22:32 +0900 KST'>September 26, 2024</span>&nbsp;·&nbsp;Kai</footer>
+  <a class="entry-link" aria-label="post link to Kubernetes DNS 구성 최적화" href="https://code-chronicle.github.io/kubernetes/optimizing-kubernetes-dns-configurations/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Kubernetes 컨테이너 환경변수 주입 방식과 우선순위
     </h2>
   </header>
@@ -188,19 +202,6 @@ LoadBalancer란? LoadBalancer 타입은 퍼블릭 클라우드 환경에서 사�
   </div>
   <footer class="entry-footer"><span title='2024-07-25 08:57:23 +0900 KST'>July 25, 2024</span>&nbsp;·&nbsp;Kai</footer>
   <a class="entry-link" aria-label="post link to Kubernetes Service Type - Loadbalancer" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-loadbalancer/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Argo Rollouts (2) - Blue/Green 배포
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>앞선 포스트에서 Argo Rollouts를 설치하고 간단한 예시를 통해 배포 전략이 적용되는 모습을 확인해보았습니다. .spec.strategy 필드를 통하여 간단한 배포 전략을 설정하고 실제 배포를 진행했는데요. Argo Rollouts는 필요에 따라 해당 필드를 다양하게 세팅하여 사용할 수 있습니다. 대표적인 방식으로 Blue/Green 배포 전략의 적용이 있습니다.
-Blue/Green 배포 1 apiVersion: argoproj.io/v1alpha1 kind: Rollout metadata: name: rollout-bluegreen spec: replicas: 5 revisionHistoryLimit: 1 selector: matchLabels: app: rollout-bluegreen template: metadata: labels: app: rollout-bluegreen spec: containers: - name: nginx image: nginx:1....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-21 21:03:24 +0900 KST'>July 21, 2024</span>&nbsp;·&nbsp;Daram</footer>
-  <a class="entry-link" aria-label="post link to Argo Rollouts (2) - Blue/Green 배포" href="https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

@@ -146,6 +146,20 @@
 
 <article class="first-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Kubernetes DNS 구성 최적화
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Kubernetes에서 DNS 구성은 단순한 네트워크 설정을 넘어 애플리케이션의 운영 효율성과 확장성에 중요한 역할을 합니다. 효율적인 DNS 해석은 빠르고 신뢰할 수 있는 서비스 검색을 제공하여 애플리케이션의 성능과 안정성을 향상시킬 수 있습니다.
+NodeLocal DNSCache Kubernetes 클러스터에서는 모든 DNS 질의를 CoreDNS가 처리합니다. 이로 인해 CoreDNS에 부하가 발생할 수 있으며, 부하가 커지면 DNS 질의 실패로 서비스 장애가 발생할 수 있습니다. NodeLocal DNSCache 데몬셋을 설치하면 DNS 성능을 향상시키고 CoreDNS의 부하를 줄일 수 있습니다.
+Install nodelocaldns configuration 문서를 보고 설치하시거나, helm 명령어를 사용하여 설치할 수 있습니다....</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-26 09:22:32 +0900 KST'>September 26, 2024</span>&nbsp;·&nbsp;Kai</footer>
+  <a class="entry-link" aria-label="post link to Kubernetes DNS 구성 최적화" href="https://code-chronicle.github.io/kubernetes/optimizing-kubernetes-dns-configurations/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Kubernetes 컨테이너 환경변수 주입 방식과 우선순위
     </h2>
   </header>
@@ -198,22 +212,9 @@ AWS ECR Multi Architecture Image Build (buildx) Multi Architecture Image를 빌�
   <footer class="entry-footer"><span title='2024-08-16 08:43:51 +0900 KST'>August 16, 2024</span>&nbsp;·&nbsp;Kai</footer>
   <a class="entry-link" aria-label="post link to AWS ECR Multi Architecture Images" href="https://code-chronicle.github.io/aws/aws-ecr-multi-architecture-images/"></a>
 </article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Kubernetes Service Type - Loadbalancer
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 Loadbalancer에 대해 자세히 알아보겠습니다.
-LoadBalancer란? LoadBalancer 타입은 퍼블릭 클라우드 환경에서 사용할 수 있으며, 클라우드 환경의 로드 밸런서를 생성하여 외부 트래픽을 Kubernetes 클러스터 내부의 서비스로 라우팅하는 데 사용됩니다. 이러한 로드 밸런서는 클러스터 외부에서 접근할 수 있는 IP 주소와 포트를 제공하여 외부 트래픽을 내부 서비스로 효율적으로 분배합니다....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-25 08:57:23 +0900 KST'>July 25, 2024</span>&nbsp;·&nbsp;Kai</footer>
-  <a class="entry-link" aria-label="post link to Kubernetes Service Type - Loadbalancer" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-loadbalancer/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
-    <a class="next" href="https://code-chronicle.github.io/page/2/">Next&nbsp;2/2&nbsp;»
+    <a class="next" href="https://code-chronicle.github.io/page/2/">Next&nbsp;2/3&nbsp;»
     </a>
   </nav>
 </footer>

@@ -6,8 +6,17 @@
     <description>Recent content in Kubernetes on Code Chronicle</description>
     <generator>Hugo -- 0.127.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 21 Sep 2024 15:12:49 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 26 Sep 2024 09:22:32 +0900</lastBuildDate>
     <atom:link href="https://code-chronicle.github.io/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kubernetes DNS 구성 최적화</title>
+      <link>https://code-chronicle.github.io/kubernetes/optimizing-kubernetes-dns-configurations/</link>
+      <pubDate>Thu, 26 Sep 2024 09:22:32 +0900</pubDate>
+      <guid>https://code-chronicle.github.io/kubernetes/optimizing-kubernetes-dns-configurations/</guid>
+      <description>Kubernetes에서 DNS 구성은 단순한 네트워크 설정을 넘어 애플리케이션의 운영 효율성과 확장성에 중요한 역할을 합니다. 효율적인 DNS 해석은 빠르고 신뢰할 수 있는 서비스 검색을 제공하여 애플리케이션의 성능과 안정성을 향상시킬 수 있습니다.
+NodeLocal DNSCache Kubernetes 클러스터에서는 모든 DNS 질의를 CoreDNS가 처리합니다. 이로 인해 CoreDNS에 부하가 발생할 수 있으며, 부하가 커지면 DNS 질의 실패로 서비스 장애가 발생할 수 있습니다. NodeLocal DNSCache 데몬셋을 설치하면 DNS 성능을 향상시키고 CoreDNS의 부하를 줄일 수 있습니다.
+Install nodelocaldns configuration 문서를 보고 설치하시거나, helm 명령어를 사용하여 설치할 수 있습니다.</description>
+    </item>
     <item>
       <title>Kubernetes 컨테이너 환경변수 주입 방식과 우선순위</title>
       <link>https://code-chronicle.github.io/kubernetes/kubernetes-container-env/</link>

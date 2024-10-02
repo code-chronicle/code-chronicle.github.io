@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><meta charset="utf-8">
+<head>
+	<meta name="generator" content="Hugo 0.127.0"><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Kubernetes | Code Chronicle</title>
-<meta name="keywords" content="">
-<meta name="description" content="Kubernetes - Code Chronicle">
+<title>Code Chronicle</title>
+
+<meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="https://code-chronicle.github.io/kubernetes/">
+<link rel="canonical" href="https://code-chronicle.github.io/">
 <meta name="google-site-verification" content="XLYYgF1H1ZwMGCrNvrmYOBbxz4bLroXX1K9MfINRy3M">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.9e9dd26a8d2ed3e32c08a1b5c82a7ac786127e923c340d2444676c8c7f643c29.css" integrity="sha256-np3Sao0u0&#43;MsCKG1yCp6x4YSfpI8NA0kRGdsjH9kPCk=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://code-chronicle.github.io/favicon.ico">
@@ -19,8 +20,8 @@
 <link rel="mask-icon" href="https://code-chronicle.github.io/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://code-chronicle.github.io/kubernetes/index.xml">
-<link rel="alternate" hreflang="en" href="https://code-chronicle.github.io/kubernetes/">
+<link rel="alternate" type="application/rss+xml" href="https://code-chronicle.github.io/index.xml">
+<link rel="alternate" hreflang="en" href="https://code-chronicle.github.io/">
 <noscript>
     <style>
         #theme-toggle,
@@ -64,27 +65,25 @@
 
   
 
-<meta property="og:title" content="Kubernetes" />
+<meta property="og:title" content="Code Chronicle" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://code-chronicle.github.io/kubernetes/" />
+<meta property="og:url" content="https://code-chronicle.github.io/" />
 
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Kubernetes"/>
+<meta name="twitter:title" content="Code Chronicle"/>
 <meta name="twitter:description" content=""/>
-
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "Kubernetes",
-      "item": "https://code-chronicle.github.io/kubernetes/"
-    }
+  "@type": "Organization",
+  "name": "Code Chronicle",
+  "url": "https://code-chronicle.github.io/",
+  "description": "",
+  "thumbnailUrl": "https://code-chronicle.github.io/favicon.ico",
+  "sameAs": [
+      
   ]
 }
 </script>
@@ -144,64 +143,6 @@
     </nav>
 </header>
 <main class="main"> 
-<header class="page-header"><div class="breadcrumbs"><a href="https://code-chronicle.github.io/">Home</a></div>
-  <h1>
-    Kubernetes
-  </h1>
-</header>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Argo Rollouts (2) - Blue/Green 배포
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>앞선 포스트에서 Argo Rollouts를 설치하고 간단한 예시를 통해 배포 전략이 적용되는 모습을 확인해보았습니다. .spec.strategy 필드를 통하여 간단한 배포 전략을 설정하고 실제 배포를 진행했는데요. Argo Rollouts는 필요에 따라 해당 필드를 다양하게 세팅하여 사용할 수 있습니다. 대표적인 방식으로 Blue/Green 배포 전략의 적용이 있습니다.
-Blue/Green 배포 1 apiVersion: argoproj.io/v1alpha1 kind: Rollout metadata: name: rollout-bluegreen spec: replicas: 5 revisionHistoryLimit: 1 selector: matchLabels: app: rollout-bluegreen template: metadata: labels: app: rollout-bluegreen spec: containers: - name: nginx image: nginx:1....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-21 21:03:24 +0900 KST'>July 21, 2024</span>&nbsp;·&nbsp;Daram</footer>
-  <a class="entry-link" aria-label="post link to Argo Rollouts (2) - Blue/Green 배포" href="https://code-chronicle.github.io/kubernetes/argo-rollouts-bluegreen/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Kubernetes Service Type - NodePort
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 NodePort에 대해 자세히 알아보겠습니다.
-NodePort란? NodePort는 클러스터 외부에서 Kubernetes 클러스터 내부로 트래픽을 전달할 수 있는 가장 간단한 방법 중 하나입니다. NodePort는 클러스터의 각 노드에서 고정된 포트를 열어, 이 포트를 통해 외부 트래픽을 특정 POD로 라우팅합니다.
-주요 특징 NodePort는 Kubernetes 클러스터 내 노드의 특정 포트(30000-32767)를 열어 트래픽을 수신합니다....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-16 18:56:08 +0900 KST'>July 16, 2024</span>&nbsp;·&nbsp;Kai</footer>
-  <a class="entry-link" aria-label="post link to Kubernetes Service Type - NodePort" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-nodeport/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Argo Rollouts (1) - Introduction
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>일반적으로 Kubernetes 클러스터 상에 애플리케이션을 구동하고 상태를 관리하기 위해서 Deployment1 리소스를 활용합니다. Deployment에는 애플리케이션의 목표 상태(i.e. 애플리케이션 Pod의 개수, 애플리케이션의 버전 등)가 저장되어 있어, 목표 상태와 클러스터 상의 실제 상태를 일치하도록 관리합니다. 이는 Kubernetes에서 기본으로 제공되는 리소스로서 매우 유용하지만, 새로운 버전의 애플리케이션을 배포할 때 몇가지의 문제를 마주치게 됩니다.
-배포 진행 속도를 컨트롤할 수 없음 Blue/Green, Canary 등의 고도화된 배포 전략을 제공하지 않음 배포 과정에 문제가 생겼을 때, 수동으로 문제를 감지하고 롤백해야 함 물론 쿠버네티스 기본 리소스만으로도 위와 같은 문제들을 해결할 수 있지만, 이는 복잡한 아키텍처 설계를 필요로 합니다....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-14 15:03:22 +0900 KST'>July 14, 2024</span>&nbsp;·&nbsp;Daram</footer>
-  <a class="entry-link" aria-label="post link to Argo Rollouts (1) - Introduction" href="https://code-chronicle.github.io/kubernetes/argo-rollouts-introduction/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Kubernetes Service Type - ClusterIP
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ClusterIP에 대해 자세히 알아보겠습니다.
-ClusterIP란? ClusterIP는 Kubernetes Service의 기본 유형입니다. 이 유형은 클러스터 내부에서만 접근 가능한 가상 IP 주소를 할당하여, Pod 간의 통신을 용이하게 합니다. ClusterIP는 외부에서 접근할 수 없기 때문에 클러스터 내부에서의 서비스 디스커버리와 서버 간 통신 목적으로 사용됩니다....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-12 20:48:24 +0900 KST'>July 12, 2024</span>&nbsp;·&nbsp;Kai</footer>
-  <a class="entry-link" aria-label="post link to Kubernetes Service Type - ClusterIP" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-clusterip/"></a>
-</article>
 
 <article class="post-entry"> 
   <header class="entry-header">
@@ -217,8 +158,8 @@ KEDA란 무엇인가? KEDA(Kubernetes Event-Driven Autoscaling)는 Kubernetes와
 </article>
 <footer class="page-footer">
   <nav class="pagination">
-    <a class="prev" href="https://code-chronicle.github.io/kubernetes/">
-      «&nbsp;Prev&nbsp;1/2
+    <a class="prev" href="https://code-chronicle.github.io/page/2/">
+      «&nbsp;Prev&nbsp;2/3
     </a>
   </nav>
 </footer>
