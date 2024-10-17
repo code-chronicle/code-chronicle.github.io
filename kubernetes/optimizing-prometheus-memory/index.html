@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Prometheus 메모리 튜닝 가이드 | Code Chronicle</title>
+<meta name="keywords" content="kubernetes, prometheus">
+<meta name="description" content="Prometheus는 모니터링과 알림을 위한 오픈 소스 시스템으로, 시스템 성능과 인프라 상태를 모니터링하는 데 널리 사용됩니다. 하지만 시간이 지남에 따라 많은 양의 메트릭 데이터를 수집하고 처리하면서 메모리 사용량이 증가할 수 있습니다. 이를 효율적으로 관리하기 위해서는 메모리 튜닝이 필수적입니다. 이번 글에서는 Prometheus의 메모리 사용을 최적화하는 방법에 대해 다루겠습니다.
+Prometheus 메모리 사용 Prometheus 메모리 사용율이 높은 경우, 아래와 같은 사유가 있을 수 있습니다.
+타임 시리즈 수 (Time Series): 활성 타임 시리즈의 수는 메모리 사용량에 직접적인 영향을 줍니다.">
+<meta name="author" content="Kai">
+<link rel="canonical" href="https://code-chronicle.github.io/kubernetes/optimizing-prometheus-memory/">
+<meta name="google-site-verification" content="XLYYgF1H1ZwMGCrNvrmYOBbxz4bLroXX1K9MfINRy3M">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9e9dd26a8d2ed3e32c08a1b5c82a7ac786127e923c340d2444676c8c7f643c29.css" integrity="sha256-np3Sao0u0&#43;MsCKG1yCp6x4YSfpI8NA0kRGdsjH9kPCk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://code-chronicle.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://code-chronicle.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://code-chronicle.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://code-chronicle.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://code-chronicle.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://code-chronicle.github.io/kubernetes/optimizing-prometheus-memory/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+
+  
+
+<meta property="og:title" content="Prometheus 메모리 튜닝 가이드" />
+<meta property="og:description" content="Prometheus는 모니터링과 알림을 위한 오픈 소스 시스템으로, 시스템 성능과 인프라 상태를 모니터링하는 데 널리 사용됩니다. 하지만 시간이 지남에 따라 많은 양의 메트릭 데이터를 수집하고 처리하면서 메모리 사용량이 증가할 수 있습니다. 이를 효율적으로 관리하기 위해서는 메모리 튜닝이 필수적입니다. 이번 글에서는 Prometheus의 메모리 사용을 최적화하는 방법에 대해 다루겠습니다.
+Prometheus 메모리 사용 Prometheus 메모리 사용율이 높은 경우, 아래와 같은 사유가 있을 수 있습니다.
+타임 시리즈 수 (Time Series): 활성 타임 시리즈의 수는 메모리 사용량에 직접적인 영향을 줍니다." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://code-chronicle.github.io/kubernetes/optimizing-prometheus-memory/" /><meta property="article:section" content="kubernetes" />
+<meta property="article:published_time" content="2024-10-08T17:22:35+09:00" />
+<meta property="article:modified_time" content="2024-10-08T17:22:35+09:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Prometheus 메모리 튜닝 가이드"/>
+<meta name="twitter:description" content="Prometheus는 모니터링과 알림을 위한 오픈 소스 시스템으로, 시스템 성능과 인프라 상태를 모니터링하는 데 널리 사용됩니다. 하지만 시간이 지남에 따라 많은 양의 메트릭 데이터를 수집하고 처리하면서 메모리 사용량이 증가할 수 있습니다. 이를 효율적으로 관리하기 위해서는 메모리 튜닝이 필수적입니다. 이번 글에서는 Prometheus의 메모리 사용을 최적화하는 방법에 대해 다루겠습니다.
+Prometheus 메모리 사용 Prometheus 메모리 사용율이 높은 경우, 아래와 같은 사유가 있을 수 있습니다.
+타임 시리즈 수 (Time Series): 활성 타임 시리즈의 수는 메모리 사용량에 직접적인 영향을 줍니다."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Kubernetes",
+      "item": "https://code-chronicle.github.io/kubernetes/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Prometheus 메모리 튜닝 가이드",
+      "item": "https://code-chronicle.github.io/kubernetes/optimizing-prometheus-memory/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Prometheus 메모리 튜닝 가이드",
+  "name": "Prometheus 메모리 튜닝 가이드",
+  "description": "Prometheus는 모니터링과 알림을 위한 오픈 소스 시스템으로, 시스템 성능과 인프라 상태를 모니터링하는 데 널리 사용됩니다. 하지만 시간이 지남에 따라 많은 양의 메트릭 데이터를 수집하고 처리하면서 메모리 사용량이 증가할 수 있습니다. 이를 효율적으로 관리하기 위해서는 메모리 튜닝이 필수적입니다. 이번 글에서는 Prometheus의 메모리 사용을 최적화하는 방법에 대해 다루겠습니다.\nPrometheus 메모리 사용 Prometheus 메모리 사용율이 높은 경우, 아래와 같은 사유가 있을 수 있습니다.\n타임 시리즈 수 (Time Series): 활성 타임 시리즈의 수는 메모리 사용량에 직접적인 영향을 줍니다.",
+  "keywords": [
+    "kubernetes", "prometheus"
+  ],
+  "articleBody": "Prometheus는 모니터링과 알림을 위한 오픈 소스 시스템으로, 시스템 성능과 인프라 상태를 모니터링하는 데 널리 사용됩니다. 하지만 시간이 지남에 따라 많은 양의 메트릭 데이터를 수집하고 처리하면서 메모리 사용량이 증가할 수 있습니다. 이를 효율적으로 관리하기 위해서는 메모리 튜닝이 필수적입니다. 이번 글에서는 Prometheus의 메모리 사용을 최적화하는 방법에 대해 다루겠습니다.\nPrometheus 메모리 사용 Prometheus 메모리 사용율이 높은 경우, 아래와 같은 사유가 있을 수 있습니다.\n타임 시리즈 수 (Time Series): 활성 타임 시리즈의 수는 메모리 사용량에 직접적인 영향을 줍니다. scrape 주기 (Scrape Interval): 데이터를 수집하는 빈도가 높을수록 메모리에 저장되는 샘플 데이터의 양이 증가합니다. 메모리 사용을 낮추는 방법 --storage.tsdb.retention.time 설정 Prometheus는 storage.tsdb.retention.time 설정으로 기간동안 데이터를 보관합니다. 보관되는 기간을 짧게 설정하면 메모리 사용량을 줄일 수 있습니다. 기본 값은 15일입니다.\n--query.max-concurrency 설정 Prometheus에서 데이터 조회시 동시에 처리되는 쿼리의 수를 설정할 수 있습니다. 동시에 처리되는 쿼리 수를 낮게 지정하면 메모리 사용량을 줄일 수 있습니다. 기본 값은 20입니다.\nScrape 주기 설정 Scrape 주기(데이터 수집 주기)가 짧으면 더 많은 메트릭이 자주 수집되어 메모리 사용량이 증가합니다. 각 job에 대해 Scrape 주기를 조정함으로써 메모리 사용을 줄일 수 있습니다.\nscrape_configs: - job_name: 'example' scrape_interval: 60s 불필요한 메트릭 제거 Prometheus와 함께 제공되는 promtool 명령어를 사용합니다. promtool tsdb analyze 사용하여 분석하고, 분석한 결과에서 Highest cardinality labels 목록에서 사용하지 않은 label을 삭제하고, 불필요한 메트릭 및 label을 제거하면 메모리 사용율을 낮출 수 있습니다.\n# promtool tsdb analyze [data path] $ promtool tsdb analyze /data Duration: 2h0m0s Series: 5547383 Label names: 248 Postings (unique label pairs): 159621 Postings entries (total label pairs): 44259261 Label pairs most involved in churning: 235023 kubernetes_io_os=linux 235023 beta_kubernetes_io_os=linux 235023 kubernetes_io_arch=amd64 235023 beta_kubernetes_io_arch=amd64 171437 app_kubernetes_io_managed_by=Helm 157630 app_kubernetes_io_component=metrics Label names most involved in churning: 244783 instance 244783 job 244783 __name__ 235023 beta_kubernetes_io_os 235023 kubernetes_io_arch 235023 beta_kubernetes_io_arch 235023 kubernetes_io_os 235023 kubernetes_io_hostname 233527 namespace Most common label pairs: 2851712 beta_kubernetes_io_os=linux 2851712 kubernetes_io_arch=amd64 2851712 beta_kubernetes_io_arch=amd64 2851712 kubernetes_io_os=linux 2085329 app_kubernetes_io_managed_by=Helm Label names with highest cumulative label value length: 928176 lease 872902 id 855778 container_id 639203 uid 599520 mountpoint 148595 pod 120729 __name__ 77262 owner_name 65469 created_by_name 28118 address 27212 interface 25276 secret 24380 image_id 23028 replicaset 17923 instance 14984 device 14900 image 14014 ip 13599 pod_ip 12806 image_spec 9337 kubernetes_io_hostname # lease, id, uid lables를 제거합니다. Highest cardinality labels: 31204 lease 21321 id 15463 uid 11114 container_id 5329 mountpoint 4746 pod 3028 __name__ 3009 owner_name 2689 created_by_name 1948 interface 1654 address 1091 device 1049 ip 1016 pod_ip 889 secret 878 replicaset 644 instance 418 resource 333 cluster_ip 302 type 263 le 252 configmap 205 endpoint Highest cardinality metric names: 93302 apiserver_request_duration_seconds_bucket 63602 apiserver_request_slo_duration_seconds_bucket 46852 coredns_dns_request_duration_seconds_bucket 45120 kubelet_runtime_operations_duration_seconds_bucket 38290 storage_operation_duration_seconds_bucket 34305 container_tasks_state 32670 coredns_dns_request_size_bytes_bucket 32670 coredns_dns_response_size_bytes_bucket 27444 container_memory_failures_total 22710 kube_pod_status_phase 22710 kube_pod_status_reason 21577 container_blkio_device_usage_total 20556 kubelet_http_requests_duration_seconds_bucket 20224 apiserver_response_sizes_bucket 불필요한 메트릭 및 lables 제거 analyze 결과에서 Highest cardinality labels top 3개(lease, id, uid)과 불필요한 메트릭을 제거하는 예제입니다.\nscrape_configs: - job_name: 'kubernetes-service-endpoints' honor_labels: true kubernetes_sd_configs: - role: endpoints relabel_configs: - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape] action: keep regex: true - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape_slow] action: drop regex: true - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme] action: replace target_label: __scheme__ regex: (https?) - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path] action: replace target_label: __metrics_path__ regex: (.+) - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port] action: replace target_label: __address__ regex: (.+?)(?::\\d+)?;(\\d+) replacement: $1:$2 - action: labelmap regex: __meta_kubernetes_service_annotation_prometheus_io_param_(.+) replacement: __param_$1 - action: labelmap regex: __meta_kubernetes_service_label_(.+) - source_labels: [__meta_kubernetes_namespace] action: replace target_label: namespace - source_labels: [__meta_kubernetes_service_name] action: replace target_label: service - source_labels: [__meta_kubernetes_pod_node_name] action: replace target_label: node metric_relabel_configs: # Highest cardinality labels top 3개(lease, id, uid) 제거 - regex: 'lease|id|uid' action: labeldrop # 불필요한 메트릭 제거 - source_labels: [__name__] regex: 'apiserver_request_duration_seconds_bucket|apiserver_request_slo_duration_seconds_bucket' action: drop 결론 Prometheus는 기본적으로 고가용성(High Availability)을 지원하지 않기 때문에, 데이터 보관 기간(storage.tsdb.retention.time)을 짧게 설정하는 것이 좋습니다. 장기간 데이터를 보관해야 하는 경우에는 Grafana Mimir, Thanos, cortex 같은 오픈소스를 설치하여 운영하는 것을 권장합니다. 불필요한 메트릭 및 label을 제거하는 것을 권장합니다. 사용하지 않는 메트릭 또는 label을 제거하면 메모리 사용율을 50%이상 낮출 수 있습니다. ",
+  "wordCount" : "608",
+  "inLanguage": "en",
+  "datePublished": "2024-10-08T17:22:35+09:00",
+  "dateModified": "2024-10-08T17:22:35+09:00",
+  "author":[{
+    "@type": "Person",
+    "name": "Kai"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://code-chronicle.github.io/kubernetes/optimizing-prometheus-memory/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Code Chronicle",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://code-chronicle.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://code-chronicle.github.io/" accesskey="h" title="Code Chronicle (Alt + H)">Code Chronicle</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://code-chronicle.github.io/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://code-chronicle.github.io/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://code-chronicle.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://code-chronicle.github.io/kubernetes/">Kubernetes</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Prometheus 메모리 튜닝 가이드
+    </h1>
+    <div class="post-meta"><span title='2024-10-08 17:22:35 +0900 KST'>October 8, 2024</span>&nbsp;·&nbsp;Kai
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#prometheus-%eb%a9%94%eb%aa%a8%eb%a6%ac-%ec%82%ac%ec%9a%a9" aria-label="Prometheus 메모리 사용">Prometheus 메모리 사용</a></li>
+                <li>
+                    <a href="#%eb%a9%94%eb%aa%a8%eb%a6%ac-%ec%82%ac%ec%9a%a9%ec%9d%84-%eb%82%ae%ec%b6%94%eb%8a%94-%eb%b0%a9%eb%b2%95" aria-label="메모리 사용을 낮추는 방법">메모리 사용을 낮추는 방법</a><ul>
+                        
+                <li>
+                    <a href="#--storagetsdbretentiontime-%ec%84%a4%ec%a0%95" aria-label="--storage.tsdb.retention.time 설정">--storage.tsdb.retention.time 설정</a></li>
+                <li>
+                    <a href="#--querymax-concurrency-%ec%84%a4%ec%a0%95" aria-label="--query.max-concurrency 설정">--query.max-concurrency 설정</a></li>
+                <li>
+                    <a href="#scrape-%ec%a3%bc%ea%b8%b0-%ec%84%a4%ec%a0%95" aria-label="Scrape 주기 설정">Scrape 주기 설정</a></li>
+                <li>
+                    <a href="#%eb%b6%88%ed%95%84%ec%9a%94%ed%95%9c-%eb%a9%94%ed%8a%b8%eb%a6%ad-%ec%a0%9c%ea%b1%b0" aria-label="불필요한 메트릭 제거">불필요한 메트릭 제거</a><ul>
+                        
+                <li>
+                    <a href="#%eb%b6%88%ed%95%84%ec%9a%94%ed%95%9c-%eb%a9%94%ed%8a%b8%eb%a6%ad-%eb%b0%8f-lables-%ec%a0%9c%ea%b1%b0" aria-label="불필요한 메트릭 및 lables 제거">불필요한 메트릭 및 lables 제거</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%ea%b2%b0%eb%a1%a0" aria-label="결론">결론</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Prometheus는 모니터링과 알림을 위한 오픈 소스 시스템으로, 시스템 성능과 인프라 상태를 모니터링하는 데 널리 사용됩니다. 하지만 시간이 지남에 따라 많은 양의 메트릭 데이터를 수집하고 처리하면서 메모리 사용량이 증가할 수 있습니다. 이를 효율적으로 관리하기 위해서는 메모리 튜닝이 필수적입니다. 이번 글에서는 Prometheus의 메모리 사용을 최적화하는 방법에 대해 다루겠습니다.</p>
+<h2 id="prometheus-메모리-사용">Prometheus 메모리 사용<a hidden class="anchor" aria-hidden="true" href="#prometheus-메모리-사용">#</a></h2>
+<p>Prometheus 메모리 사용율이 높은 경우, 아래와 같은 사유가 있을 수 있습니다.</p>
+<ul>
+<li>타임 시리즈 수 (Time Series): 활성 타임 시리즈의 수는 메모리 사용량에 직접적인 영향을 줍니다.</li>
+<li>scrape 주기 (Scrape Interval): 데이터를 수집하는 빈도가 높을수록 메모리에 저장되는 샘플 데이터의 양이 증가합니다.</li>
+</ul>
+<h2 id="메모리-사용을-낮추는-방법">메모리 사용을 낮추는 방법<a hidden class="anchor" aria-hidden="true" href="#메모리-사용을-낮추는-방법">#</a></h2>
+<h3 id="--storagetsdbretentiontime-설정"><code>--storage.tsdb.retention.time</code> 설정<a hidden class="anchor" aria-hidden="true" href="#--storagetsdbretentiontime-설정">#</a></h3>
+<p>Prometheus는 <code>storage.tsdb.retention.time</code> 설정으로 기간동안 데이터를 보관합니다. 보관되는 기간을 짧게 설정하면 메모리 사용량을 줄일 수 있습니다. 기본 값은 15일입니다.</p>
+<h3 id="--querymax-concurrency-설정"><code>--query.max-concurrency</code> 설정<a hidden class="anchor" aria-hidden="true" href="#--querymax-concurrency-설정">#</a></h3>
+<p>Prometheus에서 데이터 조회시 동시에 처리되는 쿼리의 수를 설정할 수 있습니다. 동시에 처리되는 쿼리 수를 낮게 지정하면 메모리 사용량을 줄일 수 있습니다. 기본 값은 20입니다.</p>
+<h3 id="scrape-주기-설정">Scrape 주기 설정<a hidden class="anchor" aria-hidden="true" href="#scrape-주기-설정">#</a></h3>
+<p>Scrape 주기(데이터 수집 주기)가 짧으면 더 많은 메트릭이 자주 수집되어 메모리 사용량이 증가합니다. 각 job에 대해 Scrape 주기를 조정함으로써 메모리 사용을 줄일 수 있습니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">scrape_configs</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">job_name</span>: <span style="color:#e6db74">&#39;example&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">scrape_interval</span>: <span style="color:#ae81ff">60s</span>
+</span></span></code></pre></div><h3 id="불필요한-메트릭-제거">불필요한 메트릭 제거<a hidden class="anchor" aria-hidden="true" href="#불필요한-메트릭-제거">#</a></h3>
+<p>Prometheus와 함께 제공되는 promtool 명령어를 사용합니다. promtool tsdb analyze 사용하여 분석하고, 분석한 결과에서 Highest cardinality labels 목록에서 사용하지 않은 label을 삭제하고, 불필요한 메트릭 및 label을 제거하면 메모리 사용율을 낮출 수 있습니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># promtool tsdb analyze [data path]</span>
+</span></span><span style="display:flex;"><span>$ promtool tsdb analyze /data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Duration: 2h0m0s
+</span></span><span style="display:flex;"><span>Series: <span style="color:#ae81ff">5547383</span>
+</span></span><span style="display:flex;"><span>Label names: <span style="color:#ae81ff">248</span>
+</span></span><span style="display:flex;"><span>Postings <span style="color:#f92672">(</span>unique label pairs<span style="color:#f92672">)</span>: <span style="color:#ae81ff">159621</span>
+</span></span><span style="display:flex;"><span>Postings entries <span style="color:#f92672">(</span>total label pairs<span style="color:#f92672">)</span>: <span style="color:#ae81ff">44259261</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Label pairs most involved in churning:
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">235023</span> kubernetes_io_os<span style="color:#f92672">=</span>linux
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">235023</span> beta_kubernetes_io_os<span style="color:#f92672">=</span>linux
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">235023</span> kubernetes_io_arch<span style="color:#f92672">=</span>amd64
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">235023</span> beta_kubernetes_io_arch<span style="color:#f92672">=</span>amd64
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">171437</span> app_kubernetes_io_managed_by<span style="color:#f92672">=</span>Helm
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">157630</span> app_kubernetes_io_component<span style="color:#f92672">=</span>metrics
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Label names most involved in churning:
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">244783</span> instance
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">244783</span> job
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">244783</span> __name__
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">235023</span> beta_kubernetes_io_os
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">235023</span> kubernetes_io_arch
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">235023</span> beta_kubernetes_io_arch
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">235023</span> kubernetes_io_os
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">235023</span> kubernetes_io_hostname
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">233527</span> namespace
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Most common label pairs:
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2851712</span> beta_kubernetes_io_os<span style="color:#f92672">=</span>linux
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2851712</span> kubernetes_io_arch<span style="color:#f92672">=</span>amd64
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2851712</span> beta_kubernetes_io_arch<span style="color:#f92672">=</span>amd64
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2851712</span> kubernetes_io_os<span style="color:#f92672">=</span>linux
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2085329</span> app_kubernetes_io_managed_by<span style="color:#f92672">=</span>Helm
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Label names with highest cumulative label value length:
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">928176</span> lease
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">872902</span> id
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">855778</span> container_id
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">639203</span> uid
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">599520</span> mountpoint
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">148595</span> pod
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">120729</span> __name__
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">77262</span> owner_name
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">65469</span> created_by_name
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">28118</span> address
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">27212</span> interface
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">25276</span> secret
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">24380</span> image_id
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">23028</span> replicaset
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">17923</span> instance
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">14984</span> device
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">14900</span> image
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">14014</span> ip
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">13599</span> pod_ip
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">12806</span> image_spec
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">9337</span> kubernetes_io_hostname
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># lease, id, uid lables를 제거합니다.</span>
+</span></span><span style="display:flex;"><span>Highest cardinality labels:
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">31204</span> lease
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">21321</span> id
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15463</span> uid
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">11114</span> container_id
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">5329</span> mountpoint
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4746</span> pod
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3028</span> __name__
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3009</span> owner_name
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2689</span> created_by_name
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1948</span> interface
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1654</span> address
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1091</span> device
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1049</span> ip
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1016</span> pod_ip
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">889</span> secret
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">878</span> replicaset
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">644</span> instance
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">418</span> resource
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">333</span> cluster_ip
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">302</span> type
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">263</span> le
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">252</span> configmap
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">205</span> endpoint
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Highest cardinality metric names:
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">93302</span> apiserver_request_duration_seconds_bucket
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">63602</span> apiserver_request_slo_duration_seconds_bucket
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">46852</span> coredns_dns_request_duration_seconds_bucket
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">45120</span> kubelet_runtime_operations_duration_seconds_bucket
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">38290</span> storage_operation_duration_seconds_bucket
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">34305</span> container_tasks_state
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">32670</span> coredns_dns_request_size_bytes_bucket
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">32670</span> coredns_dns_response_size_bytes_bucket
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">27444</span> container_memory_failures_total
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">22710</span> kube_pod_status_phase
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">22710</span> kube_pod_status_reason
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">21577</span> container_blkio_device_usage_total
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">20556</span> kubelet_http_requests_duration_seconds_bucket
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">20224</span> apiserver_response_sizes_bucket
+</span></span></code></pre></div><h4 id="불필요한-메트릭-및-lables-제거">불필요한 메트릭 및 lables 제거<a hidden class="anchor" aria-hidden="true" href="#불필요한-메트릭-및-lables-제거">#</a></h4>
+<p>analyze 결과에서 <code>Highest cardinality labels</code> top 3개(lease, id, uid)과 불필요한 메트릭을 제거하는 예제입니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">scrape_configs</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">job_name</span>: <span style="color:#e6db74">&#39;kubernetes-service-endpoints&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">honor_labels</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kubernetes_sd_configs</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">role</span>: <span style="color:#ae81ff">endpoints</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">relabel_configs</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">source_labels</span>: [<span style="color:#ae81ff">__meta_kubernetes_service_annotation_prometheus_io_scrape]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">action</span>: <span style="color:#ae81ff">keep</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">regex</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">source_labels</span>: [<span style="color:#ae81ff">__meta_kubernetes_service_annotation_prometheus_io_scrape_slow]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">action</span>: <span style="color:#ae81ff">drop</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">regex</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">source_labels</span>: [<span style="color:#ae81ff">__meta_kubernetes_service_annotation_prometheus_io_scheme]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">action</span>: <span style="color:#ae81ff">replace</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">target_label</span>: <span style="color:#ae81ff">__scheme__</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">regex</span>: <span style="color:#ae81ff">(https?)</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">source_labels</span>: [<span style="color:#ae81ff">__meta_kubernetes_service_annotation_prometheus_io_path]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">action</span>: <span style="color:#ae81ff">replace</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">target_label</span>: <span style="color:#ae81ff">__metrics_path__</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">regex</span>: <span style="color:#ae81ff">(.+)</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">source_labels</span>: [<span style="color:#ae81ff">__address__, __meta_kubernetes_service_annotation_prometheus_io_port]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">action</span>: <span style="color:#ae81ff">replace</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">target_label</span>: <span style="color:#ae81ff">__address__</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">regex</span>: <span style="color:#ae81ff">(.+?)(?::\d+)?;(\d+)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">replacement</span>: <span style="color:#ae81ff">$1:$2</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">action</span>: <span style="color:#ae81ff">labelmap</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">regex</span>: <span style="color:#ae81ff">__meta_kubernetes_service_annotation_prometheus_io_param_(.+)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">replacement</span>: <span style="color:#ae81ff">__param_$1</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">action</span>: <span style="color:#ae81ff">labelmap</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">regex</span>: <span style="color:#ae81ff">__meta_kubernetes_service_label_(.+)</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">source_labels</span>: [<span style="color:#ae81ff">__meta_kubernetes_namespace]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">action</span>: <span style="color:#ae81ff">replace</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">target_label</span>: <span style="color:#ae81ff">namespace</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">source_labels</span>: [<span style="color:#ae81ff">__meta_kubernetes_service_name]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">action</span>: <span style="color:#ae81ff">replace</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">target_label</span>: <span style="color:#ae81ff">service</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">source_labels</span>: [<span style="color:#ae81ff">__meta_kubernetes_pod_node_name]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">action</span>: <span style="color:#ae81ff">replace</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">target_label</span>: <span style="color:#ae81ff">node</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metric_relabel_configs</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># Highest cardinality labels top 3개(lease, id, uid) 제거</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">regex</span>: <span style="color:#e6db74">&#39;lease|id|uid&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">action</span>: <span style="color:#ae81ff">labeldrop</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># 불필요한 메트릭 제거</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">source_labels</span>: [<span style="color:#ae81ff">__name__]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">regex</span>: <span style="color:#e6db74">&#39;apiserver_request_duration_seconds_bucket|apiserver_request_slo_duration_seconds_bucket&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">action</span>: <span style="color:#ae81ff">drop</span>
+</span></span></code></pre></div><h2 id="결론">결론<a hidden class="anchor" aria-hidden="true" href="#결론">#</a></h2>
+<ul>
+<li>Prometheus는 기본적으로 고가용성(High Availability)을 지원하지 않기 때문에, 데이터 보관 기간(storage.tsdb.retention.time)을 짧게 설정하는 것이 좋습니다. 장기간 데이터를 보관해야 하는 경우에는 <a href="https://grafana.com/oss/mimir/">Grafana Mimir</a>, <a href="https://thanos.io/">Thanos</a>, <a href="https://cortexmetrics.io/">cortex</a> 같은 오픈소스를 설치하여 운영하는 것을 권장합니다.</li>
+<li>불필요한 메트릭 및 label을 제거하는 것을 권장합니다. 사용하지 않는 메트릭 또는 label을 제거하면 메모리 사용율을 50%이상 낮출 수 있습니다.</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://code-chronicle.github.io/tags/kubernetes/">Kubernetes</a></li>
+      <li><a href="https://code-chronicle.github.io/tags/prometheus/">Prometheus</a></li>
+    </ul>
+  </footer><div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "code-chronicle-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2024 <a href="https://code-chronicle.github.io/">Code Chronicle</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

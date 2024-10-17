@@ -137,6 +137,20 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Prometheus 메모리 튜닝 가이드
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Prometheus는 모니터링과 알림을 위한 오픈 소스 시스템으로, 시스템 성능과 인프라 상태를 모니터링하는 데 널리 사용됩니다. 하지만 시간이 지남에 따라 많은 양의 메트릭 데이터를 수집하고 처리하면서 메모리 사용량이 증가할 수 있습니다. 이를 효율적으로 관리하기 위해서는 메모리 튜닝이 필수적입니다. 이번 글에서는 Prometheus의 메모리 사용을 최적화하는 방법에 대해 다루겠습니다.
+Prometheus 메모리 사용 Prometheus 메모리 사용율이 높은 경우, 아래와 같은 사유가 있을 수 있습니다.
+타임 시리즈 수 (Time Series): 활성 타임 시리즈의 수는 메모리 사용량에 직접적인 영향을 줍니다....</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-10-08 17:22:35 +0900 KST'>October 8, 2024</span>&nbsp;·&nbsp;Kai</footer>
+  <a class="entry-link" aria-label="post link to Prometheus 메모리 튜닝 가이드" href="https://code-chronicle.github.io/kubernetes/optimizing-prometheus-memory/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Kubernetes DNS 구성 최적화
     </h2>
   </header>
@@ -190,22 +204,9 @@ ExternalName 이란? ExternalName 서비스는 Kubernetes 클러스터 외부의
   <footer class="entry-footer"><span title='2024-09-02 09:39:15 +0900 KST'>September 2, 2024</span>&nbsp;·&nbsp;Kai</footer>
   <a class="entry-link" aria-label="post link to Kubernetes Service Type - ExternalName" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Kubernetes Service Type - Loadbalancer
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 Loadbalancer에 대해 자세히 알아보겠습니다.
-LoadBalancer란? LoadBalancer 타입은 퍼블릭 클라우드 환경에서 사용할 수 있으며, 클라우드 환경의 로드 밸런서를 생성하여 외부 트래픽을 Kubernetes 클러스터 내부의 서비스로 라우팅하는 데 사용됩니다. 이러한 로드 밸런서는 클러스터 외부에서 접근할 수 있는 IP 주소와 포트를 제공하여 외부 트래픽을 내부 서비스로 효율적으로 분배합니다....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-25 08:57:23 +0900 KST'>July 25, 2024</span>&nbsp;·&nbsp;Kai</footer>
-  <a class="entry-link" aria-label="post link to Kubernetes Service Type - Loadbalancer" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-loadbalancer/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
-    <a class="next" href="https://code-chronicle.github.io/tags/kubernetes/page/2/">Next&nbsp;2/2&nbsp;»
+    <a class="next" href="https://code-chronicle.github.io/tags/kubernetes/page/2/">Next&nbsp;2/3&nbsp;»
     </a>
   </nav>
 </footer>

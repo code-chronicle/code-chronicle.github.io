@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head>
-	<meta name="generator" content="Hugo 0.127.0"><meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Code Chronicle</title>
-
-<meta name="description" content="">
+<title>Kubernetes | Code Chronicle</title>
+<meta name="keywords" content="">
+<meta name="description" content="Kubernetes - Code Chronicle">
 <meta name="author" content="">
-<link rel="canonical" href="https://code-chronicle.github.io/">
+<link rel="canonical" href="https://code-chronicle.github.io/kubernetes/">
 <meta name="google-site-verification" content="XLYYgF1H1ZwMGCrNvrmYOBbxz4bLroXX1K9MfINRy3M">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.9e9dd26a8d2ed3e32c08a1b5c82a7ac786127e923c340d2444676c8c7f643c29.css" integrity="sha256-np3Sao0u0&#43;MsCKG1yCp6x4YSfpI8NA0kRGdsjH9kPCk=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://code-chronicle.github.io/favicon.ico">
@@ -20,8 +19,8 @@
 <link rel="mask-icon" href="https://code-chronicle.github.io/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://code-chronicle.github.io/index.xml">
-<link rel="alternate" hreflang="en" href="https://code-chronicle.github.io/">
+<link rel="alternate" type="application/rss+xml" href="https://code-chronicle.github.io/kubernetes/index.xml">
+<link rel="alternate" hreflang="en" href="https://code-chronicle.github.io/kubernetes/">
 <noscript>
     <style>
         #theme-toggle,
@@ -65,25 +64,27 @@
 
   
 
-<meta property="og:title" content="Code Chronicle" />
+<meta property="og:title" content="Kubernetes" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://code-chronicle.github.io/" />
+<meta property="og:url" content="https://code-chronicle.github.io/kubernetes/" />
 
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Code Chronicle"/>
+<meta name="twitter:title" content="Kubernetes"/>
 <meta name="twitter:description" content=""/>
+
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Code Chronicle",
-  "url": "https://code-chronicle.github.io/",
-  "description": "",
-  "thumbnailUrl": "https://code-chronicle.github.io/favicon.ico",
-  "sameAs": [
-      
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Kubernetes",
+      "item": "https://code-chronicle.github.io/kubernetes/"
+    }
   ]
 }
 </script>
@@ -143,79 +144,28 @@
     </nav>
 </header>
 <main class="main"> 
-
-<article class="first-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Prometheus 메모리 튜닝 가이드
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Prometheus는 모니터링과 알림을 위한 오픈 소스 시스템으로, 시스템 성능과 인프라 상태를 모니터링하는 데 널리 사용됩니다. 하지만 시간이 지남에 따라 많은 양의 메트릭 데이터를 수집하고 처리하면서 메모리 사용량이 증가할 수 있습니다. 이를 효율적으로 관리하기 위해서는 메모리 튜닝이 필수적입니다. 이번 글에서는 Prometheus의 메모리 사용을 최적화하는 방법에 대해 다루겠습니다.
-Prometheus 메모리 사용 Prometheus 메모리 사용율이 높은 경우, 아래와 같은 사유가 있을 수 있습니다.
-타임 시리즈 수 (Time Series): 활성 타임 시리즈의 수는 메모리 사용량에 직접적인 영향을 줍니다....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-10-08 17:22:35 +0900 KST'>October 8, 2024</span>&nbsp;·&nbsp;Kai</footer>
-  <a class="entry-link" aria-label="post link to Prometheus 메모리 튜닝 가이드" href="https://code-chronicle.github.io/kubernetes/optimizing-prometheus-memory/"></a>
-</article>
+<header class="page-header"><div class="breadcrumbs"><a href="https://code-chronicle.github.io/">Home</a></div>
+  <h1>
+    Kubernetes
+  </h1>
+</header>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Kubernetes DNS 구성 최적화
+    <h2 class="entry-hint-parent">Getting Started with Keda
     </h2>
   </header>
   <div class="entry-content">
-    <p>Kubernetes에서 DNS 구성은 단순한 네트워크 설정을 넘어 애플리케이션의 운영 효율성과 확장성에 중요한 역할을 합니다. 효율적인 DNS 해석은 빠르고 신뢰할 수 있는 서비스 검색을 제공하여 애플리케이션의 성능과 안정성을 향상시킬 수 있습니다.
-NodeLocal DNSCache Kubernetes 클러스터에서는 모든 DNS 질의를 CoreDNS가 처리합니다. 이로 인해 CoreDNS에 부하가 발생할 수 있으며, 부하가 커지면 DNS 질의 실패로 서비스 장애가 발생할 수 있습니다. NodeLocal DNSCache 데몬셋을 설치하면 DNS 성능을 향상시키고 CoreDNS의 부하를 줄일 수 있습니다.
-Install nodelocaldns configuration 문서를 보고 설치하시거나, helm 명령어를 사용하여 설치할 수 있습니다....</p>
+    <p>KEDA: Kubernetes Event-Driven Autoscaling 소개 클라우드 네이티브 애플리케이션은 동적으로 변하는 트래픽과 워크로드를 효율적으로 처리하기 위해 자동 확장이 필수적입니다. Kubernetes는 기본적인 자동 확장 기능을 제공하지만, KEDA(Kubernetes Event-Driven Autoscaling)는 보다 세밀하고 이벤트 기반의 자동 확장을 가능하게 해줍니다. 이번 포스팅에서는 KEDA의 개념, 주요 기능, 그리고 사용 사례에 대해 알아보겠습니다.
+KEDA란 무엇인가? KEDA(Kubernetes Event-Driven Autoscaling)는 Kubernetes와 함께 작동하도록 설계된 이벤트 기반 자동 확장 플랫폼입니다. KEDA는 Kubernetes 클러스터에서 애플리케이션을 안정적이고 확장 가능하게 실행할 수 있도록 지원합니다....</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-26 09:22:32 +0900 KST'>September 26, 2024</span>&nbsp;·&nbsp;Kai</footer>
-  <a class="entry-link" aria-label="post link to Kubernetes DNS 구성 최적화" href="https://code-chronicle.github.io/kubernetes/optimizing-kubernetes-dns-configurations/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Kubernetes 컨테이너 환경변수 주입 방식과 우선순위
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Kubernetes 상에서 소스코드를 구동할 때, 코드베이스를 변경하지 않으면서 코드의 동작을 컨트롤하기 위한 방법으로 환경변수가 흔히 이용됩니다.
-Kubernetes 컨테이너에 환경변수를 주입하는 다양한 방식과, 여러 방식을 동시에 이용하여 충돌이 발생했을 때의 우선순위에 관헤 알아보겠습니다.
-key-value 직접 명시 가장 직관적인 방식으로, container spec 내부에 직접 key-value로 환경변수를 명시하는 방식입니다.
-apiVersion: v1 kind: Pod metadata: name: pod-with-env spec: containers: - name: container-with-env image: nginx:1.14.2 env: - name: SOME_ENV_KEY value: &#34;some env value&#34; - name: SOME_ENV_KEY_2 value: &#34;another env value&#34; 외부 리소스로부터 값 로드 직접 value를 명시하지 않고, 외부 리소스로부터 환경변수를 주입할 수도 있습니다....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-09-21 15:12:49 +0900 KST'>September 21, 2024</span>&nbsp;·&nbsp;Daram</footer>
-  <a class="entry-link" aria-label="post link to Kubernetes 컨테이너 환경변수 주입 방식과 우선순위" href="https://code-chronicle.github.io/kubernetes/kubernetes-container-env/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Create Kubernetes Service Accounts and Kubeconfigs
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Kubernetes의 Service Account와 kubeconfig 파일을 사용하여, kubernetes 클러스터 외부에서 접근하는 방법을 알아보도록 하겠습니다.
-Service Account 생성 Kubernetes 1.24 부터 ServiceAccount 생성시 Secret을 자동으로 생성하지 않습니다.
-Kubernetes 1.24 이상 # 생성 $ kubectl create sa test-sa # 조회 $ kubectl get sa test-sa -o yaml apiVersion: v1 kind: ServiceAccount metadata: creationTimestamp: &#34;2024-09-11T05:01:12Z&#34; name: test-sa namespace: default resourceVersion: &#34;6948234123&#34; uid: 234d3212-a859-44f6-8bfd-sdfsd123123 Kubernetes 1.23 이하 Kubernetes 1.23 이하 버전 사용시 Secret을 생성하지 않아도 됩니다....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-09-10 17:24:25 +0900 KST'>September 10, 2024</span>&nbsp;·&nbsp;Kai</footer>
-  <a class="entry-link" aria-label="post link to Create Kubernetes Service Accounts and Kubeconfigs" href="https://code-chronicle.github.io/kubernetes/kubeconfig-with-service-account/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Kubernetes Service Type - ExternalName
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Kubernetes는 애플리케이션을 컨테이너화하고 관리하는 강력한 도구입니다. 그 중에서도 Service는 클러스터 내의 애플리케이션을 네트워킹하는 데 중요한 역할을 합니다. Kubernetes 서비스는 ClusterIP, NodePort, LoadBalancer, ExternalName 네 가지 유형이 있습니다. 이번 글에서는 Kubernetes Service의 한 종류인 ExternalName에 대해 자세히 알아보겠습니다.
-ExternalName 이란? ExternalName 서비스는 Kubernetes 클러스터 외부의 서비스로 트래픽을 전달하는 특별한 서비스 유형입니다. 이 서비스는 Kubernetes 클러스터 외부의 도메인 이름(DNS)으로 트래픽을 라우팅하도록 구성됩니다. 즉, ExternalName 서비스는 외부 서비스에 대한 내부 DNS 엔트리를 생성하여 Kubernetes 클러스터 내의 애플리케이션이 외부 서비스를 쉽게 참조할 수 있게 해줍니다....</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-09-02 09:39:15 +0900 KST'>September 2, 2024</span>&nbsp;·&nbsp;Kai</footer>
-  <a class="entry-link" aria-label="post link to Kubernetes Service Type - ExternalName" href="https://code-chronicle.github.io/kubernetes/kubernetes-service-externalname/"></a>
+  <footer class="entry-footer"><span title='2024-07-03 09:00:46 +0900 KST'>July 3, 2024</span>&nbsp;·&nbsp;Kai</footer>
+  <a class="entry-link" aria-label="post link to Getting Started with Keda" href="https://code-chronicle.github.io/kubernetes/getting-started-with-keda/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
-    <a class="next" href="https://code-chronicle.github.io/page/2/">Next&nbsp;2/3&nbsp;»
+    <a class="prev" href="https://code-chronicle.github.io/kubernetes/page/2/">
+      «&nbsp;Prev&nbsp;2/3
     </a>
   </nav>
 </footer>
