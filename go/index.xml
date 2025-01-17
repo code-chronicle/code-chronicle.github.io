@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Goes on Code Chronicle</title>
+    <link>https://code-chronicle.github.io/go/</link>
+    <description>Recent content in Goes on Code Chronicle</description>
+    <generator>Hugo -- 0.127.0</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 09 Jan 2025 08:59:06 +0900</lastBuildDate>
+    <atom:link href="https://code-chronicle.github.io/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go Project Layout</title>
+      <link>https://code-chronicle.github.io/go/go-project-layout/</link>
+      <pubDate>Thu, 09 Jan 2025 08:59:06 +0900</pubDate>
+      <guid>https://code-chronicle.github.io/go/go-project-layout/</guid>
+      <description>Go 언어로 애플리케이션을 만들기 위한 프로젝트 기본 레이아웃입니다. 디렉토리 구조를 통일된 패턴으로 정의하여 관리하여 각 디렉토리의 역할을 명확히 하고, 유지보수와 코드의 가독성을 높일 수 있습니다.
+Architecture 다음과 같은 6가지 개념(Controller, Service, Repository, Storage, Domain, Pkg)을 기본 구조로 활용합니다. 각 개념에 대한 자세한 설명은 아래에 첨부하였습니다.
+flowchart LR A0(user) --&amp;gt; B0 A0(user) --&amp;gt; B1 A0(user) --&amp;gt; B2 A1(event) --&amp;gt; B3 B0 --&amp;gt; C B1 --&amp;gt; C B2 --&amp;gt; C B3 --&amp;gt; C subgraph domain / pkg subgraph controller B0(controller/http) B1(controller/grpc) B2(controller/cmd) B3(controller/event) end C(service) --&amp;gt; |optionnal| D(repository) --&amp;gt; E(storage) end Directories ├── cmd │ ├── server │ │ ├── internal │ │ │ ├── env.</description>
+    </item>
+  </channel>
+</rss>
